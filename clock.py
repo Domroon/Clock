@@ -2,7 +2,7 @@ import pygame
 from pygame import image
 import pygame.freetype
 
-class Digit(pygame.sprite.Sprite):
+class Number(pygame.sprite.Sprite):
     def __init__(self, digit, size, color, pos_x, pos_y):
         super().__init__()
         self.size = size
@@ -42,7 +42,6 @@ def add_circle(center, radius, window):
 def add_numbers(center, radius, window):
     size = 80
 
-    # 360/12 are the angles for the numbers
     angle = 360/12
     center_vector = pygame.math.Vector2(center['x'], center['y'])
     radius_vector = pygame.math.Vector2(0, -radius - size/1.5)
@@ -55,15 +54,10 @@ def add_numbers(center, radius, window):
         angle += 360/12
 
     # write alle 12 vectors in a new list and write an every place center_vector + radius_vector! then you have all correct vectors!
-    digit_1 = Digit("1", size, (255, 255, 255), number_vectors[0].x, number_vectors[0].y)
-    digit_2 = Digit("2", size, (255, 255, 255), number_vectors[1].x, number_vectors[1].y)
-    digit_3 = Digit("3", size, (255, 255, 255), number_vectors[2].x, number_vectors[2].y)
-    digit_4 = Digit("4", size, (255, 255, 255), number_vectors[3].x, number_vectors[3].y)
-    digit_5 = Digit("5", size, (255, 255, 255), number_vectors[4].x, number_vectors[4].y)
-    digit_6 = Digit("6", size, (255, 255, 255), number_vectors[5].x, number_vectors[5].y)
-    digit_7 = Digit("7", size, (255, 255, 255), number_vectors[6].x, number_vectors[6].y)
+    #digit_1 = Digit("1", size, (255, 255, 255), number_vectors[0].x, number_vectors[0].y)
+    
     digit_group = pygame.sprite.Group()
-    digit_group.add(digit_1, digit_2, digit_3, digit_4, digit_5,digit_6,digit_7)
+    digit_group.add()
     digit_group.draw(window)
 
 
