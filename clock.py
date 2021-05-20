@@ -47,18 +47,19 @@ def add_numbers(center, radius, window):
     radius_vector = pygame.math.Vector2(0, -radius - size/1.5)
     number_vectors = []
     
-    radius_vectors = [radius_vector for vector in range(1, 12)]
+    radius_vectors = [radius_vector for vector in range(0, 12)]
     for vector in radius_vectors:
         vector = vector.rotate(int(angle))
         number_vectors.append(center_vector + vector)
         angle += 360/12
 
-    # write alle 12 vectors in a new list and write an every place center_vector + radius_vector! then you have all correct vectors!
-    #digit_1 = Digit("1", size, (255, 255, 255), number_vectors[0].x, number_vectors[0].y)
-    
-    digit_group = pygame.sprite.Group()
-    digit_group.add()
-    digit_group.draw(window)
+    numbers = []
+    for i in range(len(number_vectors)):
+        numbers.append(Number(str(i+1), size, (255, 255, 255), number_vectors[i].x, number_vectors[i].y))
+
+    numbers_group = pygame.sprite.Group()
+    numbers_group.add(numbers)
+    numbers_group.draw(window)
 
 
 def main():
