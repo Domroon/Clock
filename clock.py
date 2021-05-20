@@ -132,9 +132,9 @@ def main():
         hour = time.gmtime().tm_hour + 2
         minute = time.gmtime().tm_min
         second = time.gmtime().tm_sec
-        add_pointer("min", center_vector, radius, minute, window, color=(100, 149, 237), width=8)
+        add_pointer("min", center_vector, radius, minute, window, color=(100, 149, 237), width=9)
         add_pointer("hour", center_vector, radius, hour, window, color=(64, 224, 208), length=130, width=3)
-        add_pointer("sec", center_vector, radius, second, window, color=(0, 200, 0), width=2)
+        add_pointer("sec", center_vector, radius, second, window, color=(0, 200, 100), width=2)
 
         pygame.display.update()
 
