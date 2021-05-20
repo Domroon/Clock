@@ -38,8 +38,10 @@ def main():
 
     clock = pygame.time.Clock()
 
+    angle = 0
+
     run = True
-    game_speed = 10
+    game_speed = 120
     while run:
         window.fill((0,0,0))
         clock.tick(game_speed)
@@ -58,11 +60,21 @@ def main():
 
         size = 100
 
+        vector = pygame.math.Vector2(center['x'], center['y'])
+        vector2 = pygame.math.Vector2(0, radius + size/2)
+        
+        if angle == 360:
+            angle = 0
+        angle += 1
+        vector2 = vector2.rotate(angle)
+        vector = vector + vector2
+
+        digit_1 = Digit(1, size, (255, 255, 255), vector.x, vector.y)
         digit_3 = Digit(3, size, (255, 255, 255), center['x'] + radius + size/3, center['y'])
         digit_6 = Digit(6, size, (255, 255, 255), center['x'], center['y'] + radius + size/2)
         digit_9 = Digit(9, size, (255, 255, 255), center['x'] - radius - size/3, center['y'])
         digit_group = pygame.sprite.Group()
-        digit_group.add(digit_3, digit_6, digit_9)
+        digit_group.add(digit_3, digit_6, digit_9, digit_1)
         digit_group.draw(window)
 
         number_group = pygame.sprite.Group()
