@@ -1,6 +1,6 @@
 import pygame
-from pygame import image
 import pygame.freetype
+import time
 
 class Number(pygame.sprite.Sprite):
     def __init__(self, digit, size, color, pos_x, pos_y):
@@ -36,7 +36,7 @@ class Circle(pygame.sprite.Sprite):
 
 def add_circle(center, radius, window):
     circle_group = pygame.sprite.Group()
-    circle_white = Circle(radius, (255, 255, 255), center)
+    circle_white = Circle(radius, (159, 226, 191), center)
     circle_group.add(circle_white)
     circle_group.draw(window)
 
@@ -53,7 +53,7 @@ def add_numbers(center_vector, radius_vector, size, window):
 
     numbers = []
     for i in range(len(number_vectors)):
-        numbers.append(Number(str(i+1), size, (255, 255, 255), number_vectors[i].x, number_vectors[i].y))
+        numbers.append(Number(str(i+1), size, (255, 127, 80), number_vectors[i].x, number_vectors[i].y))
 
     numbers_group = pygame.sprite.Group()
     numbers_group.add(numbers)
@@ -61,14 +61,39 @@ def add_numbers(center_vector, radius_vector, size, window):
 
 
 def add_second_lines(center_vector, radius, window):
-    second_line_begin_vector = pygame.math.Vector2(0, -230)
     second_line_end_vector = pygame.math.Vector2(0, -radius+5)
     angle_offset = 360/60
 
     for angle in range(0, 60):
+        if angle % 15 == 0:
+            length = -210
+            width = 10
+        elif angle % 5 == 0:
+            length = -210
+        else:
+            length = -230
+            width = 5
+            
+        second_line_begin_vector = pygame.math.Vector2(0, length)
+
         second_line_begin_vector2 = second_line_begin_vector.rotate(angle*angle_offset)
         second_line_end_vector2 = second_line_end_vector.rotate(angle*angle_offset)
-        pygame.draw.line(window, (255, 255, 255), center_vector + second_line_begin_vector2, center_vector + second_line_end_vector2, width=5)
+        pygame.draw.line(window, (159, 226, 191), center_vector + second_line_begin_vector2, center_vector + second_line_end_vector2, width=width)
+
+
+def add_pointer(type, center_vector, radius, time, window, length=50, width=1, color=(255, 255, 255)):
+    if type == "hour":
+        angle_offset = 360/12
+    elif type == "min":
+        angle_offset = 360/60
+    elif type == "sec":
+        angle_offset = 360/60
+
+    second_line_begin_vector = pygame.math.Vector2(0, 0)
+    second_line_end_vector = pygame.math.Vector2(0, -radius + length)
+    second_line_begin_vector = second_line_begin_vector.rotate(time*angle_offset)
+    second_line_end_vector = second_line_end_vector.rotate(time*angle_offset)
+    pygame.draw.line(window, color, center_vector + second_line_begin_vector, center_vector + second_line_end_vector, width=width)
 
 
 def main():
@@ -103,6 +128,13 @@ def main():
         add_circle(center, radius, window)
         add_numbers(center_vector, radius_vector, size, window)
         add_second_lines(center_vector, radius, window)
+
+        hour = time.gmtime().tm_hour + 2
+        minute = time.gmtime().tm_min
+        second = time.gmtime().tm_sec
+        add_pointer("min", center_vector, radius, minute, window, color=(100, 149, 237), width=8)
+        add_pointer("hour", center_vector, radius, hour, window, color=(64, 224, 208), length=130, width=3)
+        add_pointer("sec", center_vector, radius, second, window, color=(0, 200, 0), width=2)
 
         pygame.display.update()
 
