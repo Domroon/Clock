@@ -25,11 +25,6 @@ class Digit(pygame.sprite.Sprite):
             self._image = pygame.Surface((self.size/2, self.size - 20))
 
 
-class Number:
-    def __init__(self, number, size, color, pos_x, pos_y):
-        self.digit_front = Digit(number[0], size, color, pos_x, pos_y)
-        self.digit_back = Digit(number[1], size, color, pos_x + size/2, pos_y)
-
 class Circle(pygame.sprite.Sprite):
     def __init__(self, radius, color, pos):
         super().__init__()
