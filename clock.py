@@ -39,6 +39,7 @@ def main():
     clock = pygame.time.Clock()
 
     angle = 0
+    
 
     run = True
     game_speed = 120
@@ -60,25 +61,30 @@ def main():
 
         size = 100
 
-        vector = pygame.math.Vector2(center['x'], center['y'])
-        vector2 = pygame.math.Vector2(0, radius + size/2)
-        
-        if angle == 360:
-            angle = 0
-        angle += 1
-        vector2 = vector2.rotate(angle)
-        vector = vector + vector2
+        # 360/12 are the angles for the numbers
+        angle = 360/12
+        center_vector = pygame.math.Vector2(center['x'], center['y'])
+        radius_vector = pygame.math.Vector2(0, -radius - size/2)
+        number_vectors = []
+    
+        radius_vectors = [radius_vector for vector in range(1, 12)]
+        for vector in radius_vectors:
+            vector = vector.rotate(int(angle))
+            number_vectors.append(center_vector + vector)
+            angle += angle
 
-        digit_1 = Digit(1, size, (255, 255, 255), vector.x, vector.y)
-        digit_3 = Digit(3, size, (255, 255, 255), center['x'] + radius + size/3, center['y'])
+        # write alle 12 vectors in a new list and write an every place center_vector + radius_vector! then you have all correct vectors!
+        digit_1 = Digit(1, size, (255, 255, 255), number_vectors[0].x, number_vectors[0].y)
+        digit_2 = Digit(2, size, (255, 255, 255), number_vectors[1].x, number_vectors[1].y)
         digit_6 = Digit(6, size, (255, 255, 255), center['x'], center['y'] + radius + size/2)
         digit_9 = Digit(9, size, (255, 255, 255), center['x'] - radius - size/3, center['y'])
         digit_group = pygame.sprite.Group()
-        digit_group.add(digit_3, digit_6, digit_9, digit_1)
+        digit_group.add(digit_2, digit_6, digit_9, digit_1)
         digit_group.draw(window)
 
         number_group = pygame.sprite.Group()
-        number = Number("12", size, (255, 255, 255), center['x'] -size/4, center['y'] - radius - size/2.5)
+        vector_12 = center_vector + radius_vector
+        number = Number("12", size, (255, 255, 255), vector_12.x, vector_12.y)
         number_group.add(number.digit_front, number.digit_back)
         number_group.draw(window)
         
