@@ -1,21 +1,29 @@
 import pygame
+from pygame import image
 import pygame.freetype
 
-class Digit(pygame.sprite.Sprite):
+class Number(pygame.sprite.Sprite):
     def __init__(self, digit, size, color, pos_x, pos_y):
         super().__init__()
-        self.digit = digit
+        self.size = size
         font = pygame.freetype.Font(None, size)
-        self.image = pygame.Surface((size/2, size - 20))
-        font.render_to(self.image, (0, 0), str(self.digit), color)
+        self.image = digit
+        font.render_to(self.image, (0, 0), digit, color)
         self.font = pygame.freetype.Font(None)
         self.rect = self.image.get_rect()
         self.rect.center = (pos_x, pos_y)
 
-class Number:
-    def __init__(self, number, size, color, pos_x, pos_y):
-        self.digit_front = Digit(number[0], size, color, pos_x, pos_y)
-        self.digit_back = Digit(number[1], size, color, pos_x + size/2, pos_y)
+    @property
+    def image(self):
+        return self._image
+
+    @image.setter
+    def image(self, digit):
+        if len(digit) > 1:
+            self._image = pygame.Surface((self.size + 5, self.size - 20))
+        else:
+            self._image = pygame.Surface((self.size/2, self.size - 20))
+
 
 class Circle(pygame.sprite.Sprite):
     def __init__(self, radius, color, pos):
@@ -24,6 +32,34 @@ class Circle(pygame.sprite.Sprite):
         pygame.draw.circle(self.image, color, (radius,radius), radius, width=10)
         self.rect = self.image.get_rect()
         self.rect.center = (pos['x'], pos['y'])
+
+def add_circle(center, radius, window):
+    circle_group = pygame.sprite.Group()
+    circle_white = Circle(radius, (255, 255, 255), center)
+    circle_group.add(circle_white)
+    circle_group.draw(window)
+
+def add_numbers(center, radius, window):
+    size = 80
+
+    angle = 360/12
+    center_vector = pygame.math.Vector2(center['x'], center['y'])
+    radius_vector = pygame.math.Vector2(0, -radius - size/1.5)
+    number_vectors = []
+    
+    radius_vectors = [radius_vector for vector in range(0, 12)]
+    for vector in radius_vectors:
+        vector = vector.rotate(int(angle))
+        number_vectors.append(center_vector + vector)
+        angle += 360/12
+
+    numbers = []
+    for i in range(len(number_vectors)):
+        numbers.append(Number(str(i+1), size, (255, 255, 255), number_vectors[i].x, number_vectors[i].y))
+
+    numbers_group = pygame.sprite.Group()
+    numbers_group.add(numbers)
+    numbers_group.draw(window)
 
 
 def main():
@@ -36,10 +72,14 @@ def main():
     window = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Clock")
 
+    # variables
+    center = {'x' : screen_width/2, 'y': screen_height/2}
+    radius = screen_width/2 - 100
+
     clock = pygame.time.Clock()
 
     run = True
-    game_speed = 10
+    game_speed = 120
     while run:
         window.fill((0,0,0))
         clock.tick(game_speed)
@@ -48,29 +88,9 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
-        center = {'x' : screen_width/2, 'y': screen_height/2}
-        radius = screen_width/2 - 100
+        add_circle(center, radius, window)
+        add_numbers(center, radius, window)
 
-        circle_group = pygame.sprite.Group()
-        circle_white = Circle(radius, (255, 255, 255), center)
-        circle_group.add(circle_white)
-        circle_group.draw(window)
-
-        size = 100
-
-        digit_3 = Digit(3, size, (255, 255, 255), center['x'] + radius + size/3, center['y'])
-        digit_6 = Digit(6, size, (255, 255, 255), center['x'], center['y'] + radius + size/2)
-        digit_9 = Digit(9, size, (255, 255, 255), center['x'] - radius - size/3, center['y'])
-        digit_group = pygame.sprite.Group()
-        digit_group.add(digit_3, digit_6, digit_9)
-        digit_group.draw(window)
-
-        number_group = pygame.sprite.Group()
-        number = Number("12", size, (255, 255, 255), center['x'] -size/4, center['y'] - radius - size/2.5)
-        number_group.add(number.digit_front, number.digit_back)
-        number_group.draw(window)
-        
-        
         pygame.display.update()
 
 
