@@ -5,24 +5,9 @@ import time
 class Number(pygame.sprite.Sprite):
     def __init__(self, digit, size, color, pos_x, pos_y):
         super().__init__()
-        self.size = size
         font = pygame.freetype.Font(None, size)
-        self.image = digit
-        font.render_to(self.image, (0, 0), digit, color)
-        self.font = pygame.freetype.Font(None)
-        self.rect = self.image.get_rect()
+        self.image, self.rect = font.render(digit, color)
         self.rect.center = (pos_x, pos_y)
-
-    @property
-    def image(self):
-        return self._image
-
-    @image.setter
-    def image(self, digit):
-        if len(digit) > 1:
-            self._image = pygame.Surface((self.size + 5, self.size - 20))
-        else:
-            self._image = pygame.Surface((self.size/2, self.size - 20))
 
 
 class Circle(pygame.sprite.Sprite):
