@@ -5,10 +5,22 @@ import time
 class Number(pygame.sprite.Sprite):
     def __init__(self, digit, size, color, pos):
         super().__init__()
-        font = pygame.freetype.Font(None, size)
+        self.font = pygame.freetype.Font(None, size)
+        self.pos = pos
+        self.digit = digit
         self.color = color
-        self.image, self.rect = font.render(digit, self.color)
+        self.image, self.rect = self.font.render(digit, self.color)
         self.rect.center = pos
+
+    @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, color):
+        self._color = color
+        self.image, self.rect = self.font.render(self.digit, self._color)
+        self.rect.center = self.pos
 
 
 class Circle(pygame.sprite.Sprite):
@@ -29,13 +41,13 @@ def add_circle(center, radius, window):
 
 def add_numbers(radius, size, window):
     radius_vector = pygame.Vector2(0, -radius)
-    numbers_group = pygame.sprite.Group()
+    numbers_list = []
 
     for hour in range(1, 13):
         pos = window.get_rect().center + radius_vector.rotate(int(360 / 12 * hour))
-        numbers_group.add(Number(str(hour), size, (255, 255, 255), pos))
+        numbers_list.append(Number(str(hour), size, (255, 255, 255), pos))
 
-    return numbers_group
+    return numbers_list
 
 
 def add_second_lines(center_vector, radius, window):
@@ -76,35 +88,38 @@ def add_pointer(type, center_vector, radius, time, window, length=50, width=1, c
 
 def main():
     pygame.init()
+    try:
+        screen_width = 720
+        screen_height = 720
 
-    screen_width = 720
-    screen_height = 720
+        window = pygame.display.set_mode((screen_width, screen_height))
+        pygame.display.set_caption("Clock")
 
-    window = pygame.display.set_mode((screen_width, screen_height))
-    pygame.display.set_caption("Clock")
+        radius = min(window.get_rect().center) - 100
+        assert radius > 0
+        number_size = 80
 
-    radius = min(window.get_rect().center) - 100
-    assert radius > 0
-    number_size = 80
+        numbers_group = pygame.sprite.Group()
+        numbers_list = add_numbers(radius, number_size, window)
+        numbers_list[4].color = (255, 0, 0)
+        numbers_group.add(numbers_list)
+        numbers_group.sprites()[5].color = (0, 255, 255) #change add_number function so that is return a number_group!
 
-    numbers = add_numbers(radius, number_size, window)
+        clock = pygame.time.Clock()
+        fps = 120
+        while True:
+            window.fill((0, 0, 0))
 
-    clock = pygame.time.Clock()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
 
-    run = True
-    game_speed = 120
-    while run:
-        window.fill((0, 0, 0))
-        clock.tick(game_speed)
+            numbers_group.draw(window)
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-
-        numbers.draw(window)
-
-        pygame.display.update()
-
+            pygame.display.update()
+            clock.tick(fps)
+    finally:
+        pygame.quit()
 
 if __name__ == '__main__':
     main()
