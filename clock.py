@@ -98,7 +98,6 @@ def add_pointer(type, center_vector, radius, time, window, length=50, width=1, c
 
 def main():
     pygame.init()
-    pygame.freetype.init()
 
     screen_width = 720
     screen_height = 720
