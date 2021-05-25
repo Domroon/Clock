@@ -11,15 +11,9 @@ class Number(pygame.sprite.Sprite):
         self.color = color
         self.image, self.rect = self.font.render(digit, self.color)
         self.rect.center = pos
-
-    @property
-    def color(self):
-        return self._color
-
-    @color.setter
-    def color(self, color):
-        self._color = color
-        self.image, self.rect = self.font.render(self.digit, self._color)
+    
+    def update(self):
+        self.image, self.rect = self.font.render(self.digit, self.color)
         self.rect.center = self.pos
 
 
@@ -115,6 +109,7 @@ def main():
                     return
 
             numbers_group.draw(window)
+            numbers_group.update()
 
             pygame.display.update()
             clock.tick(fps)
