@@ -7,7 +7,7 @@ class Number(pygame.sprite.Sprite):
     def __init__(self, digit, size, color, pos):
         super().__init__()
         self.digit = digit
-        self.settings = {'1' : {'color' : (0, 255, 0), 'duration' : 1}}
+        self.settings = {}
         self.font = pygame.freetype.Font(None, size)
         self.pos = pos
         self.color = color
@@ -88,16 +88,24 @@ def add_pointer(type, center_vector, radius, time, window, length=50, width=1, c
     pygame.draw.line(window, color, center_vector + second_line_begin_vector, center_vector + second_line_end_vector, width=width)
 
 
-#def load_settings(numbers_group, pattern_dict):
-    #for i in range(0, len(numbers_group.sprites())):
-        #for j in range(1, 12):
-            #if pattern_dict[str(j)] == str(j) and numbers_group.sprites()[i].digit == j:
-                #numbers_group.sprites()[i].settings = pattern_dict[str(j)]
-        # wenn der key des dicts zum digit-wert des Nummern objects passt,
-        # dann lade das dict dieses keys in dieses Objekt!
+def load_settings_1(numbers_group, pattern_dict):
+    keys_list = []
+    for key in pattern_dict:
+        keys_list.append(key)
+
+    for i in range(0, 12):
+        try:
+            print(f"keys_list: {keys_list[i]} | (numbers_group.sprites()[i].digit: {numbers_group.sprites()[i].digit}")
+            if int(keys_list[i]) == int(numbers_group.sprites()[i].digit):
+                numbers_group.sprites()[i].settings = pattern_dict[str(i+1)]
+        except IndexError:
+            print("Index Error")
+        #except KeyError:
+            #print("Key Error")
 
 class Timer():
-    def __init__(self):
+    def __init__(self, max_sec):
+        self.max_sec = max_sec
         self.counter = 0
         self.timer = round(time.perf_counter()) 
         self.rest_time = 0
@@ -108,6 +116,9 @@ class Timer():
 
     def count(self):
             self.timer = round(time.perf_counter()) - self.rest_time
+            if self.timer == self.max_sec:
+                self.reset()
+
 
 def main():
     pygame.init()
@@ -122,16 +133,43 @@ def main():
         assert radius > 0
         number_size = 80
 
-        test_pattern = {'1' : 
-                                { '1' : {'color' : (255, 0, 0), 'duration' : 1}, '4' : {'color' : (255, 0, 0), 'duration' : 1}},
+        test_pattern = {
+                        '1' : 
+                                { '2' : {'color' : (255, 0, 0), 'duration' : 1}},
+                        '2' : 
+                                { '2' : {'color' : (255, 0, 0), 'duration' : 1}},
+                        '3' : 
+                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
                         '4' : 
-                                { '0': {'time_point' : 2, 'color' : (255, 0, 0), 'duration' : 1}}}
+                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '5' : 
+                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '6' : 
+                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '7' : 
+                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '8' : 
+                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '9' : 
+                                { '4': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '10' : 
+                                { '4': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '11' : 
+                                { '4': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '12' : 
+                                { '4': {'color' : (255, 0, 0), 'duration' : 1}}}
+                        #'13' : 
+                        #        { '4': {'color' : (255, 0, 0), 'duration' : 1}},}
+
+        test_pattern_2 = { '1' : {'color' : (255, 0, 255), 'duration' : 1}, '2' : {'color' : (0, 0, 255), 'duration' : 1}}
                                                                                                     
         numbers_group = pygame.sprite.Group()
         numbers_list = add_numbers(radius, number_size, window)
         numbers_group.add(numbers_list)
 
-        timer = Timer()
+        load_settings_1(numbers_group, test_pattern)
+
+        timer = Timer(5)
 
         clock = pygame.time.Clock()
         fps = 120
@@ -146,8 +184,6 @@ def main():
 
             timer.count()
             numbers_group.update(timer.timer)
-            if timer.timer == 2:
-                timer.reset()
 
             pygame.display.update()
             clock.tick(fps)
