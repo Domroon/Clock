@@ -7,7 +7,7 @@ class Number(pygame.sprite.Sprite):
     def __init__(self, digit, size, color, pos):
         super().__init__()
         self.digit = digit
-        self.settings = {'1' : {'color' : (255, 0, 255), 'duration' : 10}}
+        self.settings = {'1' : {'color' : (0, 255, 0), 'duration' : 1}}
         self.font = pygame.freetype.Font(None, size)
         self.pos = pos
         self.color = color
@@ -18,7 +18,7 @@ class Number(pygame.sprite.Sprite):
         for time_point in self.settings:
             if int(time_point) == timer:
                 self.color = self.settings[str(time_point)]['color']
-            elif timer + self.settings[time_point]['duration'] == timer:
+            elif int(time_point) + self.settings[time_point]['duration'] == timer:
                 self.color = (255, 255, 255) #white
             
         self.image, self.rect = self.font.render(self.digit, self.color)
@@ -96,6 +96,18 @@ def add_pointer(type, center_vector, radius, time, window, length=50, width=1, c
         # wenn der key des dicts zum digit-wert des Nummern objects passt,
         # dann lade das dict dieses keys in dieses Objekt!
 
+class Timer():
+    def __init__(self):
+        self.counter = 0
+        self.timer = round(time.perf_counter()) 
+        self.rest_time = 0
+    
+    def reset(self):
+        self.rest_time = self.timer * self.counter
+        self.counter += 1
+
+    def count(self):
+            self.timer = round(time.perf_counter()) - self.rest_time
 
 def main():
     pygame.init()
@@ -114,14 +126,12 @@ def main():
                                 { '1' : {'color' : (255, 0, 0), 'duration' : 1}, '4' : {'color' : (255, 0, 0), 'duration' : 1}},
                         '4' : 
                                 { '0': {'time_point' : 2, 'color' : (255, 0, 0), 'duration' : 1}}}
-
-        timer = 1
                                                                                                     
         numbers_group = pygame.sprite.Group()
         numbers_list = add_numbers(radius, number_size, window)
-        #numbers_list[4].color = (255, 0, 0)
         numbers_group.add(numbers_list)
-       # numbers_group.sprites()[5].color = (0, 255, 255) #change add_number function so that is return a number_group!
+
+        timer = Timer()
 
         clock = pygame.time.Clock()
         fps = 120
@@ -133,7 +143,11 @@ def main():
                     return
 
             numbers_group.draw(window)
-            numbers_group.update(timer)
+
+            timer.count()
+            numbers_group.update(timer.timer)
+            if timer.timer == 2:
+                timer.reset()
 
             pygame.display.update()
             clock.tick(fps)
