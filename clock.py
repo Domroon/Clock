@@ -27,23 +27,13 @@ def add_circle(center, radius, window):
     circle_group.draw(window)
 
 
-def add_numbers(center_vector, radius_vector, size, window):
-    angle = 360/12
-    number_vectors = []
-    
-    radius_vectors = [radius_vector for vector in range(0, 12)]
-    for vector in radius_vectors:
-        vector = vector.rotate(int(angle))
-        number_vectors.append(center_vector + vector)
-        angle += 360/12
-
-    numbers = []
-    for i in range(len(number_vectors)):
-        numbers.append(Number(str(i+1), size, (255, 127, 80), number_vectors[i].x, number_vectors[i].y))
-
+def add_numbers(radius, size, window):
+    radius_vector = pygame.Vector2(0, -radius)
     numbers_group = pygame.sprite.Group()
-    numbers_group.add(numbers)
-    #numbers_group.draw(window)
+
+    for hour in range(1, 13):
+        pos = window.get_rect().center + radius_vector.rotate(int(360 / 12 * hour))
+        numbers_group.add(Number(str(hour), size, (255, 255, 255), pos))
 
     return numbers_group
 
@@ -93,12 +83,11 @@ def main():
     window = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Clock")
 
-    # constants
-    center = {'x' : screen_width/2, 'y': screen_height/2}
-    radius = screen_width/2 - 100
-    size = 80
-    center_vector = pygame.math.Vector2(center['x'], center['y'])
-    radius_vector = pygame.math.Vector2(0, -radius - size/1.5)
+    radius = min(window.get_rect().center) - 100
+    assert radius > 0
+    number_size = 80
+
+    numbers = add_numbers(radius, number_size, window)
 
     clock = pygame.time.Clock()
 
@@ -112,7 +101,7 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
-        #numbers = add_numbers
+        numbers.draw(window)
 
         pygame.display.update()
 
