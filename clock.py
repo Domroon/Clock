@@ -3,11 +3,12 @@ import pygame.freetype
 import time
 
 class Number(pygame.sprite.Sprite):
-    def __init__(self, digit, size, color, pos_x, pos_y):
+    def __init__(self, digit, size, color, pos):
         super().__init__()
         font = pygame.freetype.Font(None, size)
-        self.image, self.rect = font.render(digit, color)
-        self.rect.center = (pos_x, pos_y)
+        self.color = color
+        self.image, self.rect = font.render(digit, self.color)
+        self.rect.center = pos
 
 
 class Circle(pygame.sprite.Sprite):
@@ -42,7 +43,9 @@ def add_numbers(center_vector, radius_vector, size, window):
 
     numbers_group = pygame.sprite.Group()
     numbers_group.add(numbers)
-    numbers_group.draw(window)
+    #numbers_group.draw(window)
+
+    return numbers_group
 
 
 def add_second_lines(center_vector, radius, window):
@@ -109,16 +112,7 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
-        add_circle(center, radius, window)
-        add_numbers(center_vector, radius_vector, size, window)
-        add_second_lines(center_vector, radius, window)
-
-        hour = time.gmtime().tm_hour + 2
-        minute = time.gmtime().tm_min
-        second = time.gmtime().tm_sec
-        add_pointer("min", center_vector, radius, minute, window, color=(100, 149, 237), width=9)
-        add_pointer("hour", center_vector, radius, hour, window, color=(64, 224, 208), length=130, width=3)
-        add_pointer("sec", center_vector, radius, second, window, color=(0, 200, 100), width=2)
+        #numbers = add_numbers
 
         pygame.display.update()
 
