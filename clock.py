@@ -1,4 +1,5 @@
 import pygame
+from pygame import Surface, Vector2, surface
 import pygame.freetype
 import time
 
@@ -82,6 +83,7 @@ PATTERNS = {
                                 { '6': {'color' : (255, 0, 0), 'duration' : 1}}}
         }
 
+
 class Number(pygame.sprite.Sprite):
     def __init__(self, digit, size, color, pos):
         super().__init__()
@@ -106,17 +108,35 @@ class Number(pygame.sprite.Sprite):
         self.rect.center = self.pos
 
 
-class Circle(pygame.sprite.Sprite):
-    def __init__(self, radius, color, pos):
+class Timer():
+    def __init__(self, max_sec):
+        self.max_sec = max_sec
+        self.counter = 0
+        self.timer = round(time.perf_counter()) 
+        self.rest_time = 0
+    
+    def reset(self):
+        self.rest_time = self.timer * self.counter
+        self.counter += 1
+
+    def count(self):
+            self.timer = round(time.perf_counter()) - self.rest_time
+            if self.timer == self.max_sec:
+                self.reset()
+
+
+class TickMark(pygame.sprite.Sprite):
+    def __init__(self, pos, width, length):
         super().__init__()
-        self.image = pygame.Surface((radius*2, radius*2))
-        pygame.draw.circle(self.image, color, (radius,radius), radius, width=10)
+        #self.center = surface.get_rect().center
+        #self.radius_vector = Vector2(0, -radius + 5)
+        #self.angle_per_minute = 360/60
+        self.image = pygame.Surface((width, length))
         self.rect = self.image.get_rect()
-        self.rect.center = (pos['x'], pos['y'])
-
-
-def draw_circle(surface, radius):
-    pygame.draw.circle(surface, (159, 226, 191), surface.get_rect().center, radius, 10)
+        self.rect.midtop = pos
+    
+    def update(self, color):
+        self.image.fill(color)
 
 
 def add_numbers(radius, size, window):
@@ -128,6 +148,22 @@ def add_numbers(radius, size, window):
         numbers_list.append(Number(str(hour), size, (255, 255, 255), pos))
 
     return numbers_list
+
+
+def draw_circle(surface, radius):
+    pygame.draw.circle(surface, (159, 226, 191), surface.get_rect().center, radius, 10)
+
+
+def load_settings(numbers_group, pattern_dict):
+    keys_list = []
+    for key in pattern_dict:
+        keys_list.append(key)
+
+    for i in range(0, 12):
+        if int(keys_list[i]) == int(numbers_group.sprites()[i].digit):
+                numbers_group.sprites()[i].settings = pattern_dict[str(i+1)]
+
+
 
 
 def add_second_lines(center_vector, radius, window):
@@ -166,33 +202,6 @@ def add_pointer(type, center_vector, radius, time, window, length=50, width=1, c
     pygame.draw.line(window, color, center_vector + second_line_begin_vector, center_vector + second_line_end_vector, width=width)
 
 
-def load_settings(numbers_group, pattern_dict):
-    keys_list = []
-    for key in pattern_dict:
-        keys_list.append(key)
-
-    for i in range(0, 12):
-        #print(f"keys_list: {keys_list[i]} | (numbers_group.sprites()[i].digit: {numbers_group.sprites()[i].digit}")
-        if int(keys_list[i]) == int(numbers_group.sprites()[i].digit):
-                numbers_group.sprites()[i].settings = pattern_dict[str(i+1)]
-
-
-class Timer():
-    def __init__(self, max_sec):
-        self.max_sec = max_sec
-        self.counter = 0
-        self.timer = round(time.perf_counter()) 
-        self.rest_time = 0
-    
-    def reset(self):
-        self.rest_time = self.timer * self.counter
-        self.counter += 1
-
-    def count(self):
-            self.timer = round(time.perf_counter()) - self.rest_time
-            if self.timer == self.max_sec:
-                self.reset()
-
 
 def main():
     pygame.init()
@@ -211,6 +220,13 @@ def main():
         numbers_list = add_numbers(radius, number_size, window)
         numbers_group.add(numbers_list)
 
+        tick_length = 50
+        radius_vector = Vector2(0, -radius + tick_length + 10)
+        #radius_vector = radius_vector.rotate(45) # tick must be rotate itself too!
+        tick = TickMark(window.get_rect().center + radius_vector, 10, tick_length)
+        tick_mark_group = pygame.sprite.Group()
+        tick_mark_group.add(tick)
+
         load_settings(numbers_group, PATTERNS['test_pattern2'])
 
         timer = Timer(13)
@@ -224,10 +240,14 @@ def main():
                 if event.type == pygame.QUIT:
                     return
 
-            numbers_group.draw(window)
             draw_circle(window, radius - 50)
+
+            tick_mark_group.update((0, 0, 255))
+            tick_mark_group.draw(window)
+            
             timer.count()
             numbers_group.update(timer.timer)
+            numbers_group.draw(window)
 
             pygame.display.update()
             clock.tick(fps)
