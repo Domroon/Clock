@@ -1,7 +1,86 @@
 import pygame
 import pygame.freetype
 import time
-import itertools
+
+PATTERNS = {
+        'test_pattern' : {
+                        '1' : 
+                                { '1' : {'color' : (255, 0, 0), 'duration' : 1}},
+                        '2' : 
+                                { '1' : {'color' : (255, 0, 0), 'duration' : 1}},
+                        '3' : 
+                                { '1': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '4' : 
+                                { '1': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '5' : 
+                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '6' : 
+                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '7' : 
+                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '8' : 
+                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '9' : 
+                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '10' : 
+                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '11' : 
+                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '12' : 
+                                { '3': {'color' : (255, 0, 0), 'duration' : 1}}},
+
+        'test_pattern2' : {
+                        '1' : 
+                                { '1' : {'color' : (255, 0, 0), 'duration' : 1}},
+                        '2' : 
+                                { '2' : {'color' : (255, 0, 0), 'duration' : 1}},
+                        '3' : 
+                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '4' : 
+                                { '4': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '5' : 
+                                { '5': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '6' : 
+                                { '6': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '7' : 
+                                { '7': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '8' : 
+                                { '8': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '9' : 
+                                { '9': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '10' : 
+                                { '10': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '11' : 
+                                { '11': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '12' : 
+                                { '12': {'color' : (255, 0, 0), 'duration' : 1}}},
+
+        'test_pattern3' : {
+                        '1' : 
+                                { '1' : {'color' : (255, 0, 0), 'duration' : 1}},
+                        '2' : 
+                                { '2' : {'color' : (255, 0, 0), 'duration' : 1}},
+                        '3' : 
+                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '4' : 
+                                { '4': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '5' : 
+                                { '5': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '6' : 
+                                { '6': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '7' : 
+                                { '1': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '8' : 
+                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '9' : 
+                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '10' : 
+                                { '4': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '11' : 
+                                { '5': {'color' : (255, 0, 0), 'duration' : 1}},
+                        '12' : 
+                                { '6': {'color' : (255, 0, 0), 'duration' : 1}}}
+        }
 
 class Number(pygame.sprite.Sprite):
     def __init__(self, digit, size, color, pos):
@@ -19,6 +98,8 @@ class Number(pygame.sprite.Sprite):
             if int(time_point) == timer:
                 self.color = self.settings[str(time_point)]['color']
             elif int(time_point) + self.settings[time_point]['duration'] == timer:
+                self.color = (255, 255, 255) #white
+            else:
                 self.color = (255, 255, 255) #white
             
         self.image, self.rect = self.font.render(self.digit, self.color)
@@ -88,20 +169,16 @@ def add_pointer(type, center_vector, radius, time, window, length=50, width=1, c
     pygame.draw.line(window, color, center_vector + second_line_begin_vector, center_vector + second_line_end_vector, width=width)
 
 
-def load_settings_1(numbers_group, pattern_dict):
+def load_settings(numbers_group, pattern_dict):
     keys_list = []
     for key in pattern_dict:
         keys_list.append(key)
 
     for i in range(0, 12):
-        try:
-            print(f"keys_list: {keys_list[i]} | (numbers_group.sprites()[i].digit: {numbers_group.sprites()[i].digit}")
-            if int(keys_list[i]) == int(numbers_group.sprites()[i].digit):
+        #print(f"keys_list: {keys_list[i]} | (numbers_group.sprites()[i].digit: {numbers_group.sprites()[i].digit}")
+        if int(keys_list[i]) == int(numbers_group.sprites()[i].digit):
                 numbers_group.sprites()[i].settings = pattern_dict[str(i+1)]
-        except IndexError:
-            print("Index Error")
-        #except KeyError:
-            #print("Key Error")
+
 
 class Timer():
     def __init__(self, max_sec):
@@ -132,44 +209,14 @@ def main():
         radius = min(window.get_rect().center) - 100
         assert radius > 0
         number_size = 80
-
-        test_pattern = {
-                        '1' : 
-                                { '2' : {'color' : (255, 0, 0), 'duration' : 1}},
-                        '2' : 
-                                { '2' : {'color' : (255, 0, 0), 'duration' : 1}},
-                        '3' : 
-                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '4' : 
-                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '5' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '6' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '7' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '8' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '9' : 
-                                { '4': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '10' : 
-                                { '4': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '11' : 
-                                { '4': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '12' : 
-                                { '4': {'color' : (255, 0, 0), 'duration' : 1}}}
-                        #'13' : 
-                        #        { '4': {'color' : (255, 0, 0), 'duration' : 1}},}
-
-        test_pattern_2 = { '1' : {'color' : (255, 0, 255), 'duration' : 1}, '2' : {'color' : (0, 0, 255), 'duration' : 1}}
                                                                                                     
         numbers_group = pygame.sprite.Group()
         numbers_list = add_numbers(radius, number_size, window)
         numbers_group.add(numbers_list)
 
-        load_settings_1(numbers_group, test_pattern)
+        load_settings(numbers_group, PATTERNS['test_pattern2'])
 
-        timer = Timer(5)
+        timer = Timer(13)
 
         clock = pygame.time.Clock()
         fps = 120
