@@ -28,7 +28,8 @@ PATTERNS = {
                         '11' : 
                                 { '3': {'color' : (255, 0, 0), 'duration' : 1}},
                         '12' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}}},
+                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
+                        'pattern_duration' : 4},
 
         'test_pattern2' : {
                         '1' : 
@@ -54,7 +55,8 @@ PATTERNS = {
                         '11' : 
                                 { '11': {'color' : (255, 0, 0), 'duration' : 1}},
                         '12' : 
-                                { '12': {'color' : (255, 0, 0), 'duration' : 1}}},
+                                { '12': {'color' : (255, 0, 0), 'duration' : 1}},
+                        'pattern_duration' : 13},
 
         'test_pattern3' : {
                         '1' : 
@@ -80,7 +82,8 @@ PATTERNS = {
                         '11' : 
                                 { '5': {'color' : (255, 0, 0), 'duration' : 1}},
                         '12' : 
-                                { '6': {'color' : (255, 0, 0), 'duration' : 1}}}
+                                { '6': {'color' : (255, 0, 0), 'duration' : 1}},
+                        'pattern_duration' : 7}
         }
 
 
@@ -126,17 +129,16 @@ class Timer():
 
 
 class TickMark(pygame.sprite.Sprite):
-    def __init__(self, pos, width, length, color):
+    def __init__(self, pos, width, length, color, surface):
         super().__init__()
         #self.center = surface.get_rect().center
         #self.radius_vector = Vector2(0, -radius + 5)
         #self.angle_per_minute = 360/60
+        self.surface = surface
         self.pos = pos
         self.image = pygame.Surface((width, length))
-        self.image_rect = self.image.get_rect()
-        self.image.fill((0, 255, 0))
-        self.rect = self.image.get_rect()
-        self.rect.center = pos
+        self.rect = pos
+        self.image.fill(color)
         self.image.set_colorkey((0, 0, 0)) #background from an empty Surface is black by default (make it transparent)
     
     def update(self):
@@ -145,7 +147,8 @@ class TickMark(pygame.sprite.Sprite):
     def rotate(self, angle):
         self.image = pygame.transform.rotozoom(self.image, angle, 1)
         self.image.set_colorkey((0, 0, 0))
-        self.rect.center = self.pos
+        self.rect = self.image.get_rect(center = self.pos)
+        self.image = self.image.convert_alpha() # work faster with this image
 
 
 def add_numbers(radius, size, window):
@@ -163,7 +166,26 @@ def draw_circle(surface, radius):
     pygame.draw.circle(surface, (159, 226, 191), surface.get_rect().center, radius, 10)
 
 
-def load_settings(numbers_group, pattern_dict):
+def generate_tick_marks(radius, tick_mark_group, window):
+    angle_per_minute = 360/60
+    
+    for minute in range(0, 60):
+        tick_length = 20
+        tick_width = 2
+        radius_vector = Vector2(0, -radius + tick_length + 50)
+        radius_vector = radius_vector.rotate(int(minute* angle_per_minute)) # tick must be rotate itself too
+        if minute % 15 == 0:
+            tick_length = 40
+            tick_width = 10
+        if minute % 5 == 0 and not minute % 15 == 0:
+            tick_length = 40  
+            tick_width = 5
+        tick = TickMark(window.get_rect().center + radius_vector, tick_width, tick_length, (255, 255, 255), window)
+        tick.rotate(-minute * angle_per_minute)
+        tick_mark_group.add(tick)
+
+
+def load_pattern(numbers_group, pattern_dict):
     keys_list = []
     for key in pattern_dict:
         keys_list.append(key)
@@ -211,6 +233,9 @@ def add_pointer(type, center_vector, radius, time, window, length=50, width=1, c
     pygame.draw.line(window, color, center_vector + second_line_begin_vector, center_vector + second_line_end_vector, width=width)
 
 
+
+
+
 def main():
     pygame.init()
     try:
@@ -228,17 +253,13 @@ def main():
         numbers_list = add_numbers(radius, number_size, window)
         numbers_group.add(numbers_list)
 
-        tick_length = 54
-        radius_vector = Vector2(0, -radius + tick_length + 32)
-        radius_vector = radius_vector.rotate(-45) # tick must be rotate itself too!
-        tick = TickMark(window.get_rect().center + radius_vector, 20, tick_length, (0, 0, 255))
-        tick.rotate(45)
         tick_mark_group = pygame.sprite.Group()
-        tick_mark_group.add(tick)
+        generate_tick_marks(radius, tick_mark_group, window)
 
-        load_settings(numbers_group, PATTERNS['test_pattern2'])
-
-        timer = Timer(13)
+        # pattern
+        pattern = PATTERNS['test_pattern']
+        load_pattern(numbers_group, pattern)
+        timer = Timer(pattern['pattern_duration'])
 
         clock = pygame.time.Clock()
         fps = 120
