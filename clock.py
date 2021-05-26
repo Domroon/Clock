@@ -196,28 +196,7 @@ def load_pattern(numbers_group, pattern_dict):
 
 
 
-
-def add_second_lines(center_vector, radius, window):
-    second_line_end_vector = pygame.math.Vector2(0, -radius+5)
-    angle_offset = 360/60
-
-    for angle in range(0, 60):
-        if angle % 15 == 0:
-            length = -210
-            width = 10
-        elif angle % 5 == 0:
-            length = -210
-        else:
-            length = -230
-            width = 5
-            
-        second_line_begin_vector = pygame.math.Vector2(0, length)
-
-        second_line_begin_vector2 = second_line_begin_vector.rotate(angle*angle_offset)
-        second_line_end_vector2 = second_line_end_vector.rotate(angle*angle_offset)
-        pygame.draw.line(window, (159, 226, 191), center_vector + second_line_begin_vector2, center_vector + second_line_end_vector2, width=width)
-
-
+# please remove this and implement a hands class
 def add_pointer(type, center_vector, radius, time, window, length=50, width=1, color=(255, 255, 255)):
     if type == "hour":
         angle_offset = 360/12
@@ -231,7 +210,6 @@ def add_pointer(type, center_vector, radius, time, window, length=50, width=1, c
     second_line_begin_vector = second_line_begin_vector.rotate(time*angle_offset)
     second_line_end_vector = second_line_end_vector.rotate(time*angle_offset)
     pygame.draw.line(window, color, center_vector + second_line_begin_vector, center_vector + second_line_end_vector, width=width)
-
 
 
 
