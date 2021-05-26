@@ -115,11 +115,8 @@ class Circle(pygame.sprite.Sprite):
         self.rect.center = (pos['x'], pos['y'])
 
 
-def add_circle(center, radius, window):
-    circle_group = pygame.sprite.Group()
-    circle_white = Circle(radius, (159, 226, 191), center)
-    circle_group.add(circle_white)
-    circle_group.draw(window)
+def draw_circle(surface, radius):
+    pygame.draw.circle(surface, (159, 226, 191), surface.get_rect().center, radius, 10)
 
 
 def add_numbers(radius, size, window):
@@ -206,7 +203,7 @@ def main():
         window = pygame.display.set_mode((screen_width, screen_height))
         pygame.display.set_caption("Clock")
 
-        radius = min(window.get_rect().center) - 100
+        radius = min(window.get_rect().center) - 50
         assert radius > 0
         number_size = 80
                                                                                                     
@@ -228,7 +225,7 @@ def main():
                     return
 
             numbers_group.draw(window)
-
+            draw_circle(window, radius - 50)
             timer.count()
             numbers_group.update(timer.timer)
 
