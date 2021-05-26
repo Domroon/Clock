@@ -126,17 +126,26 @@ class Timer():
 
 
 class TickMark(pygame.sprite.Sprite):
-    def __init__(self, pos, width, length):
+    def __init__(self, pos, width, length, color):
         super().__init__()
         #self.center = surface.get_rect().center
         #self.radius_vector = Vector2(0, -radius + 5)
         #self.angle_per_minute = 360/60
+        self.pos = pos
         self.image = pygame.Surface((width, length))
+        self.image_rect = self.image.get_rect()
+        self.image.fill((0, 255, 0))
         self.rect = self.image.get_rect()
-        self.rect.midtop = pos
+        self.rect.center = pos
+        self.image.set_colorkey((0, 0, 0)) #background from an empty Surface is black by default (make it transparent)
     
-    def update(self, color):
-        self.image.fill(color)
+    def update(self):
+        pass
+
+    def rotate(self, angle):
+        self.image = pygame.transform.rotozoom(self.image, angle, 1)
+        self.image.set_colorkey((0, 0, 0))
+        self.rect.center = self.pos
 
 
 def add_numbers(radius, size, window):
@@ -202,7 +211,6 @@ def add_pointer(type, center_vector, radius, time, window, length=50, width=1, c
     pygame.draw.line(window, color, center_vector + second_line_begin_vector, center_vector + second_line_end_vector, width=width)
 
 
-
 def main():
     pygame.init()
     try:
@@ -220,10 +228,11 @@ def main():
         numbers_list = add_numbers(radius, number_size, window)
         numbers_group.add(numbers_list)
 
-        tick_length = 50
-        radius_vector = Vector2(0, -radius + tick_length + 10)
-        #radius_vector = radius_vector.rotate(45) # tick must be rotate itself too!
-        tick = TickMark(window.get_rect().center + radius_vector, 10, tick_length)
+        tick_length = 54
+        radius_vector = Vector2(0, -radius + tick_length + 32)
+        radius_vector = radius_vector.rotate(-45) # tick must be rotate itself too!
+        tick = TickMark(window.get_rect().center + radius_vector, 20, tick_length, (0, 0, 255))
+        tick.rotate(45)
         tick_mark_group = pygame.sprite.Group()
         tick_mark_group.add(tick)
 
@@ -242,7 +251,7 @@ def main():
 
             draw_circle(window, radius - 50)
 
-            tick_mark_group.update((0, 0, 255))
+            tick_mark_group.update()
             tick_mark_group.draw(window)
             
             timer.count()
