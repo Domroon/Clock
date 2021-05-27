@@ -2,6 +2,7 @@ import pygame
 from pygame import Surface, Vector2, surface
 import pygame.freetype
 import time
+import math
 
 PATTERNS = {
         'test_pattern' : {
@@ -103,9 +104,9 @@ class Number(pygame.sprite.Sprite):
             if int(time_point) == timer:
                 self.color = self.settings[str(time_point)]['color']
             elif int(time_point) + self.settings[time_point]['duration'] == timer:
-                self.color = (255, 255, 255) #white
+                self.color = (255, 200, 200) #white
             else:
-                self.color = (255, 255, 255) #white
+                self.color = (255, 200, 200) #white
             
         self.image, self.rect = self.font.render(self.digit, self.color)
         self.rect.center = self.pos
@@ -131,21 +132,32 @@ class Timer():
 class TickMark(pygame.sprite.Sprite):
     def __init__(self, pos, width, length, color, surface):
         super().__init__()
+        self.width = width
+        self.length = length
         self.surface = surface
         self.pos = pos
         self.image = pygame.Surface((width, length))
-        self.rect = pos
+        self.rect = self.image.get_rect(midbottom=self.pos)
         self.image.fill(color)
-        self.image.set_colorkey((0, 0, 0)) #background from an empty Surface is black by default (make it transparent)
+        #self.image.set_colorkey((0, 0, 0)) #background from an empty Surface is black by default (make it transparent)
     
     def update(self):
+        # use this method to update the colorchanges in the future
         pass
 
-    def rotate(self, angle):
+    def rotate(self, angle, rotation_point):
         self.image = pygame.transform.rotozoom(self.image, angle, 1)
         self.image.set_colorkey((0, 0, 0))
-        self.rect = self.image.get_rect(center = self.pos)
+        if rotation_point == 'center':
+                self.rect = self.image.get_rect(center = self.pos)
+        elif rotation_point == 'midbottom':
+                self.rect = self.image.get_rect(midbottom = self.surface.get_rect().center)
         self.image = self.image.convert_alpha() # work faster with this image
+
+
+class Hand(TickMark):
+        def __init__(self, pos, width, length, color, surface):
+            super().__init__(pos, width, length, color, surface)
 
 
 def add_numbers(radius, size, window):
@@ -163,7 +175,7 @@ def draw_circle(surface, radius):
     pygame.draw.circle(surface, (159, 226, 191), surface.get_rect().center, radius, 10)
 
 
-def generate_tick_marks(radius, tick_mark_group, window):
+def generate_tick_marks(radius, tick_mark_group, surface):
     angle_per_minute = 360/60
     
     for minute in range(0, 60):
@@ -177,8 +189,8 @@ def generate_tick_marks(radius, tick_mark_group, window):
         if minute % 5 == 0 and not minute % 15 == 0:
             tick_length = 40  
             tick_width = 5
-        tick = TickMark(window.get_rect().center + radius_vector, tick_width, tick_length, (255, 255, 255), window)
-        tick.rotate(-minute * angle_per_minute)
+        tick = TickMark(surface.get_rect().center + radius_vector, tick_width, tick_length, (0, 0, 255), surface)
+        tick.rotate(-minute * angle_per_minute, 'center')
         tick_mark_group.add(tick)
 
 
@@ -209,6 +221,12 @@ def add_pointer(type, center_vector, radius, time, window, length=50, width=1, c
     pygame.draw.line(window, color, center_vector + second_line_begin_vector, center_vector + second_line_end_vector, width=width)
 
 
+def generate_hands(hands_group, surface):
+    hand = Hand((surface.get_rect().center), 50, 210, (0, 255, 0), surface)
+    hand.rotate(-90, 'midbottom')
+    # i have to calculate the x - coordinate! but how?
+    hand.rect = hand.rect.move((hand.image.get_width()/2 - hand.width/2, 22))
+    hands_group.add(hand)
 
 
 def main():
@@ -219,15 +237,22 @@ def main():
 
         window = pygame.display.set_mode((screen_width, screen_height))
         pygame.display.set_caption("Clock")
+        window.fill((255, 255, 255))
 
         radius = min(window.get_rect().center) - 50
         assert radius > 0
         number_size = 80
-                                                                                                    
+
+        # hands
+        hands_group = pygame.sprite.Group()
+        generate_hands(hands_group, window)
+
+        # numbers                                                                
         numbers_group = pygame.sprite.Group()
         numbers_list = add_numbers(radius, number_size, window)
         numbers_group.add(numbers_list)
 
+        # tick marks
         tick_mark_group = pygame.sprite.Group()
         generate_tick_marks(radius, tick_mark_group, window)
 
@@ -243,9 +268,11 @@ def main():
                 if event.type == pygame.QUIT:
                     return
 
+            hands_group.draw(window)
+
             draw_circle(window, radius - 50)
 
-            tick_mark_group.update()
+            #tick_mark_group.update()
             tick_mark_group.draw(window)
             
             timer.count()
