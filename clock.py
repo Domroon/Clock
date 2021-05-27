@@ -131,9 +131,6 @@ class Timer():
 class TickMark(pygame.sprite.Sprite):
     def __init__(self, pos, width, length, color, surface):
         super().__init__()
-        #self.center = surface.get_rect().center
-        #self.radius_vector = Vector2(0, -radius + 5)
-        #self.angle_per_minute = 360/60
         self.surface = surface
         self.pos = pos
         self.image = pygame.Surface((width, length))
@@ -242,8 +239,6 @@ def main():
         clock = pygame.time.Clock()
         fps = 120
         while True:
-            window.fill((0, 0, 0))
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
