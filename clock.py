@@ -137,7 +137,7 @@ class TickMark(pygame.sprite.Sprite):
         self.surface = surface
         self.pos = pos
         self.image = pygame.Surface((width, length))
-        self.rect = self.image.get_rect(midbottom=self.pos)
+        self.rect = self.image.get_rect(center=self.pos)
         self.image.fill(color)
         #self.image.set_colorkey((0, 0, 0)) #background from an empty Surface is black by default (make it transparent)
     
@@ -145,19 +145,25 @@ class TickMark(pygame.sprite.Sprite):
         # use this method to update the colorchanges in the future
         pass
 
-    def rotate(self, angle, rotation_point):
+    def rotate(self, angle):
         self.image = pygame.transform.rotozoom(self.image, angle, 1)
         self.image.set_colorkey((0, 0, 0))
-        if rotation_point == 'center':
-                self.rect = self.image.get_rect(center = self.pos)
-        elif rotation_point == 'midbottom':
-                self.rect = self.image.get_rect(midbottom = self.surface.get_rect().center)
+        self.rect = self.image.get_rect(center = self.pos)
         self.image = self.image.convert_alpha() # work faster with this image
 
 
 class Hand(TickMark):
         def __init__(self, pos, width, length, color, surface):
-            super().__init__(pos, width, length, color, surface)
+            super().__init__(pos, width, length, color, surface)#
+            self.rect = self.image.get_rect(center = self.surface.get_rect().center + Vector2(0, -self.length/2))
+
+        def rotate(self, angle):
+            hand_vector = Vector2(0, -self.length/2)
+            hand_vector = hand_vector.rotate(angle)
+            self.image = pygame.transform.rotozoom(self.image, -angle, 1)
+            self.image.set_colorkey((0, 0, 0))
+            self.rect = self.image.get_rect(center = self.pos + hand_vector)
+            self.image = self.image.convert_alpha() # work faster with this image
 
 
 def add_numbers(radius, size, window):
@@ -190,7 +196,7 @@ def generate_tick_marks(radius, tick_mark_group, surface):
             tick_length = 40  
             tick_width = 5
         tick = TickMark(surface.get_rect().center + radius_vector, tick_width, tick_length, (0, 0, 255), surface)
-        tick.rotate(-minute * angle_per_minute, 'center')
+        tick.rotate(-minute * angle_per_minute)
         tick_mark_group.add(tick)
 
 
@@ -223,9 +229,7 @@ def add_pointer(type, center_vector, radius, time, window, length=50, width=1, c
 
 def generate_hands(hands_group, surface):
     hand = Hand((surface.get_rect().center), 50, 210, (0, 255, 0), surface)
-    hand.rotate(-90, 'midbottom')
-    # i have to calculate the x - coordinate! but how?
-    hand.rect = hand.rect.move((hand.image.get_width()/2 - hand.width/2, 22))
+    hand.rotate(150)
     hands_group.add(hand)
 
 
