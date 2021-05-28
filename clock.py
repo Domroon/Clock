@@ -138,22 +138,34 @@ class PointSightingLine(pygame.sprite.Sprite):
         self.pos = pos
         self.image = pygame.Surface((width, length), pygame.SRCALPHA)
         self.image = self.image.convert_alpha() # work faster with this image
-        self.image_copy = self.image
-        self.rect = self.image.get_rect(center=self.pos)
         self.image.fill(color)
+        self.image_copy = self.image
         self.move_vector = Vector2(0, -radius - offset)
+        self.rect = self.image.get_rect(center=self.pos+self.move_vector)
         self.radius = radius
 
     def rotate(self, angle):
         move_vector = self.move_vector
         move_vector = move_vector.rotate(angle)
-
         self.image = pygame.transform.rotozoom(self.image_copy, -angle, 1)
         self.rect = self.image.get_rect(center = self.pos + move_vector)
 
+
 class Hand(PointSightingLine):
-    def __init__(self, pos, width, length, color, surface, radius=0, offset=0):
+    def __init__(self, hand_type, pos, width, length, color, surface, radius=0, offset=0):
         super().__init__(pos, width, length, color, surface, radius, offset)
+        self.hand_type = hand_type
+        self.angle_per_second = 360/60
+        self.angle_per_minute = self.angle_per_second
+        self.angle_per_hour = 360/12
+
+    def update(self, now):
+        if self.hand_type == "second":
+            self.rotate(self.angle_per_second * now.second)
+        elif self.hand_type == "minute":
+            self.rotate(self.angle_per_minute * now.minute)
+        elif self.hand_type == "hour":
+            self.rotate(self.angle_per_hour * now.hour + 30 * (now.minute/60))
 
 
 def draw_circle(surface, radius):
@@ -193,9 +205,9 @@ def generate_tick_marks(radius, tick_mark_group, surface):
 
 def generate_hands(radius, hands_group, surface):
     offset = -230
-    second_hand = Hand((surface.get_rect().center), 2, 230, (0, 255, 255), surface, radius=radius, offset=offset)
-    minute_hand = Hand((surface.get_rect().center), 10, 230, (0, 255, 0), surface, radius=radius, offset=offset)
-    hour_hand = Hand((surface.get_rect().center), 10, 140, (0, 255, 0), surface, radius=radius, offset=offset-45)
+    second_hand = Hand("second", (surface.get_rect().center), 2, 230, (0, 255, 255),surface, radius=radius, offset=offset)
+    minute_hand = Hand("minute", (surface.get_rect().center), 10, 230, (0, 255, 0), surface, radius=radius, offset=offset)
+    hour_hand = Hand("hour", (surface.get_rect().center), 10, 140, (0, 255, 0), surface, radius=radius, offset=offset-45)
     hands_group.add(minute_hand, hour_hand, second_hand)
 
 
@@ -219,16 +231,18 @@ def main():
         pygame.display.set_caption("Clock")
 
         background = pygame.Surface(window.get_size())
-
+        
+        # circle
         radius = min(window.get_rect().center) - 50
         assert radius > 0
-        number_size = 80
+        draw_circle(background, radius - 50)
 
         # hands
         hands_group = pygame.sprite.Group()
         generate_hands(radius, hands_group, window)
 
-        # numbers                                                                
+        # numbers
+        number_size = 80                                                                
         numbers_group = pygame.sprite.Group()
         numbers_list = generate_numbers(radius, number_size, window)
         numbers_group.add(numbers_list)
@@ -242,9 +256,6 @@ def main():
         load_pattern(numbers_group, pattern)
         timer = Timer(pattern['pattern_duration'])
 
-        angle_per_second = 360/60
-        angle_per_hour = 360/12
-
         clock = pygame.time.Clock()
         fps = 120
         while True:
@@ -257,12 +268,8 @@ def main():
             tick_mark_group.draw(window)        
 
             now = DateTime.now()
-            hands_group.sprites()[2].rotate(angle_per_second * now.second) # give now-object to the update method and make this calulation in depence of the hand-type
-            hands_group.sprites()[0].rotate(angle_per_second * now.minute) # give now-object to the update method and make this calulation in depence of the hand-type
-            hands_group.sprites()[1].rotate(angle_per_hour * now.hour + 30 * (now.minute/60)) # give now-object to the update method and make this calulation in depence of the hand-type
+            hands_group.update(now)
             hands_group.draw(window)
-
-            draw_circle(window, radius - 50)
             
             timer.count()
             numbers_group.update(timer.timer)
