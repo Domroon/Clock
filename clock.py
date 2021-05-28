@@ -160,13 +160,6 @@ class Hand(PointSightingLine):
         super().__init__(pos, width, length, color, surface)
         self.move_vector = Vector2(0, -self.length/2 + self.width*2)
 
-    def rotate(self, angle):
-        move_vector = self.move_vector
-        move_vector = move_vector.rotate(angle)
-
-        self.image = pygame.transform.rotozoom(self.image_copy, -angle, 1)
-        self.rect = self.image.get_rect(center = self.pos + move_vector)
-
 
 def draw_circle(surface, radius):
     pygame.draw.circle(surface, (0, 0, 255), surface.get_rect().center, radius, 10)
