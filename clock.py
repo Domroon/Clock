@@ -88,23 +88,6 @@ PATTERNS = {
         }
 
 
-class Timer():
-    def __init__(self, max_sec):
-        self.max_sec = max_sec
-        self.counter = 0
-        self.timer = round(time.perf_counter()) 
-        self.rest_time = 0
-    
-    def reset(self):
-        self.rest_time = self.timer * self.counter
-        self.counter += 1
-
-    def count(self):
-            self.timer = round(time.perf_counter()) - self.rest_time
-            if self.timer == self.max_sec:
-                self.reset()
-
-
 class PointSightingLine(pygame.sprite.Sprite):
     def __init__(self, pos, width, length, color, radius=0, offset=0, rotate_itself=True):
         super().__init__()
@@ -155,43 +138,43 @@ class Number(PointSightingLine):
         self.rect = self.image.get_rect(center=pos + self.move_vector)
 
 
-def draw_circle(surface, radius):
-    pygame.draw.circle(surface, (0, 0, 255), surface.get_rect().center, radius, 10)
+def draw_circle(radius, screen_width, surface):
+    pygame.draw.circle(surface, (0, 0, 255), surface.get_rect().center, radius, int(screen_width/100))
 
 
-def generate_numbers(radius, numbers_group, size, window):
+def generate_numbers(radius, numbers_group, size, surface):
     angel_per_number = 360/12
     for i in range(1, 13):
-        number = Number(str(i), size, window.get_rect().center, (255, 255, 255), radius=radius, offset=50)
+        number = Number(str(i), size, surface.get_rect().center, (255, 255, 255), radius=radius, offset=50)
         number.rotate(i * angel_per_number)
         numbers_group.add(number)
 
 
-def generate_tick_marks(radius, tick_mark_group, surface):
+def generate_tick_marks(radius, screen_width, tick_mark_group, surface):
     angle_per_minute = 360/60
     
     for second in range(0, 60):
-        tick_length = 20
-        tick_width = 2
-        offset = -20
+        tick_length = screen_width/36
+        tick_width = screen_width/400
+        offset = -screen_width/48
         if second % 15 == 0:
-            tick_length = 40
-            tick_width = 10
-            offset = -30
+            tick_length = screen_width/18
+            tick_width = screen_width/80
+            offset = -screen_width/28
         if second % 5 == 0 and not second % 15 == 0:
-            tick_length = 40  
-            tick_width = 5
-            offset = -25
+            tick_length = screen_width/18  
+            tick_width = screen_width/160
+            offset = -screen_width/28
         tick = PointSightingLine(surface.get_rect().center, tick_width, tick_length, (0, 0, 255), radius=radius, offset=offset)
         tick.rotate(second*angle_per_minute)
         tick_mark_group.add(tick)
 
 
-def generate_hands(radius, hands_group, surface):
-    offset = -180
-    second_hand = Hand("second", (surface.get_rect().center), 2, 230, (0, 255, 255), radius=radius, offset=offset)
-    minute_hand = Hand("minute", (surface.get_rect().center), 10, 230, (0, 255, 0), radius=radius, offset=offset)
-    hour_hand = Hand("hour", (surface.get_rect().center), 10, 140, (0, 255, 0), radius=radius, offset=offset-45)
+def generate_hands(radius, hands_group, screen_width, surface):
+    offset = -screen_width/4
+    second_hand = Hand("second", (surface.get_rect().center), screen_width/400, screen_width/3, (0, 255, 255), radius=radius, offset=offset)
+    minute_hand = Hand("minute", (surface.get_rect().center), screen_width/80, screen_width/3, (0, 255, 0), radius=radius, offset=offset)
+    hour_hand = Hand("hour", (surface.get_rect().center), screen_width/80, screen_width/5, (0, 255, 0), radius=radius, offset=offset-screen_width/15)
     hands_group.add(minute_hand, hour_hand, second_hand)
 
 
@@ -199,35 +182,30 @@ def main():
     pygame.init()
     try:
         screen_width = 720
-        screen_height = 720
 
-        window = pygame.display.set_mode((screen_width, screen_height))
+        window = pygame.display.set_mode((screen_width, screen_width))
         pygame.display.set_caption("Clock")
 
         background = pygame.Surface(window.get_size())
         
         # circle
-        radius = min(window.get_rect().center) - 100
+        radius = min(window.get_rect().center) - screen_width/8
         assert radius > 0
-        draw_circle(background, radius)
+
+        draw_circle(radius, screen_width, background)
 
         # hands
         hands_group = pygame.sprite.Group()
-        generate_hands(radius, hands_group, window)
+        generate_hands(radius, hands_group, screen_width, window)
 
         # numbers
-        number_size = 80                                                                
+        number_size = screen_width/12                                                                
         numbers_group = pygame.sprite.Group()
         generate_numbers(radius, numbers_group, number_size, window)
 
         # tick marks
         tick_mark_group = pygame.sprite.Group()
-        generate_tick_marks(radius, tick_mark_group, background)
-
-        # pattern
-        pattern = PATTERNS['test_pattern3']
-        #load_pattern(numbers_group, pattern)
-        timer = Timer(pattern['pattern_duration'])
+        generate_tick_marks(radius, screen_width, tick_mark_group, background)
 
         clock = pygame.time.Clock()
         fps = 120
@@ -244,8 +222,6 @@ def main():
             hands_group.update(now)
             hands_group.draw(window)
             
-            #timer.count()
-            #numbers_group.update(timer.timer)
             numbers_group.draw(window)
 
             pygame.display.update()
