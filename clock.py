@@ -128,7 +128,7 @@ class Timer():
             if self.timer == self.max_sec:
                 self.reset()
 
-
+# implement update method? its not necessary because i update nothing, its static!
 class TickMark(pygame.sprite.Sprite):
     def __init__(self, pos, width, length, color, surface, radius=0, offset=0):
         super().__init__()
