@@ -3,7 +3,6 @@ import pygame
 from pygame import Vector2
 import pygame.freetype
 import time
-import math
 
 PATTERNS = {
         'test_pattern' : {
@@ -105,9 +104,9 @@ class Number(pygame.sprite.Sprite):
             if int(time_point) == timer:
                 self.color = self.settings[str(time_point)]['color']
             elif int(time_point) + self.settings[time_point]['duration'] == timer:
-                self.color = (255, 200, 200) #white
+                self.color = (255, 255, 255) #white
             else:
-                self.color = (255, 200, 200) #white
+                self.color = (255, 255, 255) #white
             
         self.image, self.rect = self.font.render(self.digit, self.color)
         self.rect.center = self.pos
@@ -131,7 +130,7 @@ class Timer():
 
 
 class TickMark(pygame.sprite.Sprite):
-    def __init__(self, pos, width, length, color, surface):
+    def __init__(self, pos, width, length, color, surface, radius=0, offset=0):
         super().__init__()
         self.width = width
         self.length = length
@@ -142,33 +141,38 @@ class TickMark(pygame.sprite.Sprite):
         self.image_copy = self.image
         self.rect = self.image.get_rect(center=self.pos)
         self.image.fill(color)
+        self.move_vector = Vector2(0, -radius + self.length + 50 - offset)
+        self.radius = radius
     
-    def update(self):
-        # use this method to update the colorchanges in the future
-        pass
-
-    def rotate(self, angle, radius, second, angle_per_minute, offset):
-        radius_vector = Vector2(0, -radius + self.length + 50 - offset)
-        radius_vector = radius_vector.rotate(int(second* angle_per_minute)) # tick must be rotate itself too
-
-        self.image = pygame.transform.rotozoom(self.image_copy, angle, 1)
-        self.rect = self.image.get_rect(center = self.pos + radius_vector)
-
-
-class Hand(TickMark):
-    def __init__(self, pos, width, length, color, surface):
-        super().__init__(pos, width, length, color, surface)#
-        self.rect = self.image.get_rect(center = self.surface.get_rect().center + Vector2(0, -self.length/2))
+    def update(self, angle):
+        self.rotate(angle)
 
     def rotate(self, angle):
-        hand_vector = Vector2(0, -self.length/2 + self.width*2)
-        hand_vector = hand_vector.rotate(angle)
+        move_vector = self.move_vector
+        move_vector = move_vector.rotate(angle)
 
         self.image = pygame.transform.rotozoom(self.image_copy, -angle, 1)
-        self.rect = self.image.get_rect(center = self.pos + hand_vector)
+        self.rect = self.image.get_rect(center = self.pos + move_vector)
+
+# use update to update the positionings of the hands and do not what i do in the main-function
+class Hand(TickMark):
+    def __init__(self, pos, width, length, color, surface, radius=0, offset=0):
+        super().__init__(pos, width, length, color, surface)
+        self.move_vector = Vector2(0, -self.length/2 + self.width*2)
+
+    def rotate(self, angle):
+        move_vector = self.move_vector
+        move_vector = move_vector.rotate(angle)
+
+        self.image = pygame.transform.rotozoom(self.image_copy, -angle, 1)
+        self.rect = self.image.get_rect(center = self.pos + move_vector)
 
 
-def add_numbers(radius, size, window):
+def draw_circle(surface, radius):
+    pygame.draw.circle(surface, (0, 0, 255), surface.get_rect().center, radius, 10)
+
+
+def generate_numbers(radius, size, window):
     radius_vector = pygame.Vector2(0, -radius)
     numbers_list = []
 
@@ -177,10 +181,6 @@ def add_numbers(radius, size, window):
         numbers_list.append(Number(str(hour), size, (255, 255, 255), pos))
 
     return numbers_list
-
-
-def draw_circle(surface, radius):
-    pygame.draw.circle(surface, (159, 226, 191), surface.get_rect().center, radius, 10)
 
 
 def generate_tick_marks(radius, tick_mark_group, surface):
@@ -198,9 +198,16 @@ def generate_tick_marks(radius, tick_mark_group, surface):
             tick_length = 40  
             tick_width = 5
             offset = tick_length/2 - 10
-        tick = TickMark(surface.get_rect().center, tick_width, tick_length, (0, 0, 255), surface)
-        tick.rotate(-second * angle_per_minute, radius, second, angle_per_minute, offset)
+        tick = TickMark(surface.get_rect().center, tick_width, tick_length, (0, 0, 255), surface, radius=radius, offset=offset)
+        tick.rotate(second*angle_per_minute)
         tick_mark_group.add(tick)
+
+
+def generate_hands(hands_group, surface):
+    second_hand = Hand((surface.get_rect().center), 2, 230, (0, 255, 255), surface)
+    minute_hand = Hand((surface.get_rect().center), 10, 230, (0, 255, 0), surface)
+    hour_hand = Hand((surface.get_rect().center), 10, 150, (0, 255, 0), surface)
+    hands_group.add(minute_hand, hour_hand, second_hand)
 
 
 def load_pattern(numbers_group, pattern_dict):
@@ -211,13 +218,6 @@ def load_pattern(numbers_group, pattern_dict):
     for i in range(0, 12):
         if int(keys_list[i]) == int(numbers_group.sprites()[i].digit):
                 numbers_group.sprites()[i].settings = pattern_dict[str(i+1)]
-
-
-def generate_hands(hands_group, surface):
-    second_hand = Hand((surface.get_rect().center), 2, 230, (0, 255, 0), surface)
-    minute_hand = Hand((surface.get_rect().center), 10, 230, (0, 255, 0), surface)
-    hour_hand = Hand((surface.get_rect().center), 10, 150, (0, 255, 0), surface)
-    hands_group.add(second_hand, minute_hand, hour_hand)
 
 
 def main():
@@ -241,7 +241,7 @@ def main():
 
         # numbers                                                                
         numbers_group = pygame.sprite.Group()
-        numbers_list = add_numbers(radius, number_size, window)
+        numbers_list = generate_numbers(radius, number_size, window)
         numbers_group.add(numbers_list)
 
         # tick marks
@@ -265,16 +265,16 @@ def main():
                 if event.type == pygame.QUIT:
                     return
 
+            #tick_mark_group.update()
+            tick_mark_group.draw(window)        
+
             now = DateTime.now()
-            hands_group.sprites()[0].rotate(angle_per_second * now.second)
-            hands_group.sprites()[1].rotate(angle_per_second * now.minute)
-            hands_group.sprites()[2].rotate(angle_per_hour * now.hour + 30 * (now.minute/60))
+            hands_group.sprites()[2].rotate(angle_per_second * now.second) # give now-object to the update method and make this calulation in depence of the hand-type
+            hands_group.sprites()[0].rotate(angle_per_second * now.minute) # give now-object to the update method and make this calulation in depence of the hand-type
+            hands_group.sprites()[1].rotate(angle_per_hour * now.hour + 30 * (now.minute/60)) # give now-object to the update method and make this calulation in depence of the hand-type
             hands_group.draw(window)
 
             draw_circle(window, radius - 50)
-
-            #tick_mark_group.update()
-            tick_mark_group.draw(window)
             
             timer.count()
             numbers_group.update(timer.timer)
