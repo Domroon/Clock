@@ -141,11 +141,8 @@ class PointSightingLine(pygame.sprite.Sprite):
         self.image_copy = self.image
         self.rect = self.image.get_rect(center=self.pos)
         self.image.fill(color)
-        self.move_vector = Vector2(0, -radius + self.length + 50 - offset)
+        self.move_vector = Vector2(0, -radius - offset)
         self.radius = radius
-    
-    def update(self, angle):
-        self.rotate(angle)
 
     def rotate(self, angle):
         move_vector = self.move_vector
@@ -154,11 +151,9 @@ class PointSightingLine(pygame.sprite.Sprite):
         self.image = pygame.transform.rotozoom(self.image_copy, -angle, 1)
         self.rect = self.image.get_rect(center = self.pos + move_vector)
 
-# use update to update the positionings of the hands and do not what i do in the main-function
 class Hand(PointSightingLine):
     def __init__(self, pos, width, length, color, surface, radius=0, offset=0):
-        super().__init__(pos, width, length, color, surface)
-        self.move_vector = Vector2(0, -self.length/2 + self.width*2)
+        super().__init__(pos, width, length, color, surface, radius, offset)
 
 
 def draw_circle(surface, radius):
@@ -182,24 +177,25 @@ def generate_tick_marks(radius, tick_mark_group, surface):
     for second in range(0, 60):
         tick_length = 20
         tick_width = 2
-        offset = 0
+        offset = -70
         if second % 15 == 0:
             tick_length = 40
             tick_width = 10
-            offset = tick_length/2 - 10
+            offset = -70
         if second % 5 == 0 and not second % 15 == 0:
             tick_length = 40  
             tick_width = 5
-            offset = tick_length/2 - 10
+            offset = -80
         tick = PointSightingLine(surface.get_rect().center, tick_width, tick_length, (0, 0, 255), surface, radius=radius, offset=offset)
         tick.rotate(second*angle_per_minute)
         tick_mark_group.add(tick)
 
 
-def generate_hands(hands_group, surface):
-    second_hand = Hand((surface.get_rect().center), 2, 230, (0, 255, 255), surface)
-    minute_hand = Hand((surface.get_rect().center), 10, 230, (0, 255, 0), surface)
-    hour_hand = Hand((surface.get_rect().center), 10, 150, (0, 255, 0), surface)
+def generate_hands(radius, hands_group, surface):
+    offset = -230
+    second_hand = Hand((surface.get_rect().center), 2, 230, (0, 255, 255), surface, radius=radius, offset=offset)
+    minute_hand = Hand((surface.get_rect().center), 10, 230, (0, 255, 0), surface, radius=radius, offset=offset)
+    hour_hand = Hand((surface.get_rect().center), 10, 140, (0, 255, 0), surface, radius=radius, offset=offset-45)
     hands_group.add(minute_hand, hour_hand, second_hand)
 
 
@@ -230,7 +226,7 @@ def main():
 
         # hands
         hands_group = pygame.sprite.Group()
-        generate_hands(hands_group, window)
+        generate_hands(radius, hands_group, window)
 
         # numbers                                                                
         numbers_group = pygame.sprite.Group()
@@ -258,7 +254,6 @@ def main():
                 if event.type == pygame.QUIT:
                     return
 
-            #tick_mark_group.update()
             tick_mark_group.draw(window)        
 
             now = DateTime.now()
