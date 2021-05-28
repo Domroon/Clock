@@ -128,7 +128,7 @@ class Timer():
             if self.timer == self.max_sec:
                 self.reset()
 
-# implement update method? its not necessary because i update nothing, its static!
+
 class PointSightingLine(pygame.sprite.Sprite):
     def __init__(self, pos, width, length, color, surface, radius=0, offset=0):
         super().__init__()
@@ -172,7 +172,7 @@ def draw_circle(surface, radius):
     pygame.draw.circle(surface, (0, 0, 255), surface.get_rect().center, radius, 10)
 
 
-def generate_numbers(radius, size, window):
+def generate_numbers(radius, numbers_group, size, window):
     radius_vector = pygame.Vector2(0, -radius)
     numbers_list = []
 
@@ -180,7 +180,7 @@ def generate_numbers(radius, size, window):
         pos = window.get_rect().center + radius_vector.rotate(int(360 / 12 * hour))
         numbers_list.append(Number(str(hour), size, (255, 255, 255), pos))
 
-    return numbers_list
+    numbers_group.add(numbers_list)
 
 
 def generate_tick_marks(radius, tick_mark_group, surface):
@@ -244,8 +244,7 @@ def main():
         # numbers
         number_size = 80                                                                
         numbers_group = pygame.sprite.Group()
-        numbers_list = generate_numbers(radius, number_size, window)
-        numbers_group.add(numbers_list)
+        generate_numbers(radius, numbers_group, number_size, window)
 
         # tick marks
         tick_mark_group = pygame.sprite.Group()
