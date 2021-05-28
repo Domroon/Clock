@@ -129,6 +129,7 @@ class Hand(PointSightingLine):
 class Number(PointSightingLine):
     def __init__(self, number, size, pos, color, radius, offset=0, width=0, length=0, rotate_itself=False):
         super().__init__(pos, width, length, color, radius, offset, rotate_itself)
+        self.pos = pos
         self.number = number
         self.settings = {}
         self.font = pygame.freetype.Font(None, size)
@@ -136,7 +137,34 @@ class Number(PointSightingLine):
         self.image, self.rect = self.font.render(self.number, self.color)
         self.image_copy = self.image
         self.rect = self.image.get_rect(center=pos + self.move_vector)
+        self.r = 255
+        self.g = 255
+        self.b = 255
 
+    def update(self, frame):
+        #self.increase_decrease_brightness(frame)
+        self.increase_decrease_brightness(frame, increase=False)
+        #self.blink_all(frame)
+    
+    def increase_decrease_brightness(self, frame, increase=True):
+        if not self.r == 254:
+            if increase:
+                self.r += 2
+                self.g += 2
+                self.b += 2
+            else:
+                self.r -= 2
+                self.g -= 2
+                self.b -= 2
+        self.font.render_to(self.image, (0, 0), self.number, (self.r, self.g, self.b))
+        self.font.bgcolor = (0, 0, 0)
+
+    def blink_all(self, frame, duration=60):
+        if frame == 1:
+            self.font.render_to(self.image, (0, 0), self.number, (255, 0, 0))
+        if frame == duration:
+            self.font.bgcolor = (0, 0, 0)
+            self.font.render_to(self.image, (0, 0), self.number, (0, 0, 0))
 
 def draw_circle(radius, screen_width, surface):
     pygame.draw.circle(surface, (0, 100, 200), surface.get_rect().center, radius, int(screen_width/100))
@@ -145,7 +173,7 @@ def draw_circle(radius, screen_width, surface):
 def generate_numbers(radius, numbers_group, size, surface):
     angel_per_number = 360/12
     for i in range(1, 13):
-        number = Number(str(i), size, surface.get_rect().center, (0, 100, 120), radius=radius, offset=50)
+        number = Number(str(i), size, surface.get_rect().center, (255, 255, 255), radius=radius, offset=50)
         number.rotate(i * angel_per_number)
         numbers_group.add(number)
 
@@ -208,7 +236,11 @@ def main():
 
         clock = pygame.time.Clock()
         fps = 120
+        frame = 0
         while True:
+            window.fill((0, 0, 0))
+            frame += 1
+            print(frame)
             window.blit(background, (0, 0))
 
             for event in pygame.event.get():
@@ -221,10 +253,13 @@ def main():
             hands_group.update(now)
             hands_group.draw(window)
             
+            numbers_group.update(frame)
             numbers_group.draw(window)
 
             pygame.display.update()
             clock.tick(fps)
+            if frame == fps:
+                frame = 0
     finally:
         pygame.quit()
 
