@@ -137,6 +137,8 @@ class TickMark(pygame.sprite.Sprite):
         self.surface = surface
         self.pos = pos
         self.image = pygame.Surface((width, length), pygame.SRCALPHA)
+        self.image = self.image.convert_alpha() # work faster with this image
+        self.image_copy = self.image
         self.rect = self.image.get_rect(center=self.pos)
         self.image.fill(color)
     
@@ -145,7 +147,7 @@ class TickMark(pygame.sprite.Sprite):
         pass
 
     def rotate(self, angle):
-        self.image = pygame.transform.rotozoom(self.image, angle, 1)
+        self.image = pygame.transform.rotozoom(self.image_copy, angle, 1)
         self.rect = self.image.get_rect(center = self.pos)
         self.image = self.image.convert_alpha() # work faster with this image
 
@@ -156,12 +158,11 @@ class Hand(TickMark):
             self.rect = self.image.get_rect(center = self.surface.get_rect().center + Vector2(0, -self.length/2))
 
         def rotate(self, angle):
-            hand_vector = Vector2(0, -self.length/2)
+            hand_vector = Vector2(0, -self.length/2 + self.width/2)
             hand_vector = hand_vector.rotate(angle)
-            self.image = pygame.transform.rotozoom(self.image, -angle, 1)
-            self.image.set_colorkey((0, 0, 0))
+
+            self.image = pygame.transform.rotozoom(self.image_copy, -angle, 1)
             self.rect = self.image.get_rect(center = self.pos + hand_vector)
-            self.image = self.image.convert_alpha() # work faster with this image
 
 
 def add_numbers(radius, size, window):
@@ -227,7 +228,7 @@ def add_pointer(type, center_vector, radius, time, window, length=50, width=1, c
 
 def generate_hands(hands_group, surface):
     hand = Hand((surface.get_rect().center), 50, 210, (0, 255, 0), surface)
-    hand.rotate(360)
+    hand.rotate(20)
     hands_group.add(hand)
 
 
@@ -239,7 +240,8 @@ def main():
 
         window = pygame.display.set_mode((screen_width, screen_height))
         pygame.display.set_caption("Clock")
-        window.fill((255, 255, 255))
+
+        background = pygame.Surface(window.get_size())
 
         radius = min(window.get_rect().center) - 50
         assert radius > 0
@@ -257,7 +259,7 @@ def main():
 
         # tick marks
         tick_mark_group = pygame.sprite.Group()
-        generate_tick_marks(radius, tick_mark_group, window)
+        generate_tick_marks(radius, tick_mark_group, background)
 
         # pattern
         pattern = PATTERNS['test_pattern']
@@ -267,13 +269,17 @@ def main():
         clock = pygame.time.Clock()
         fps = 120
         while True:
+            window.blit(background, (0, 0))
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
 
             hands_group.draw(window)
-            #angle += 0.1
-            #hands_group.sprites()[0].rotate(angle)
+            angle += 1
+            if angle == 360:
+                angle = 0
+            hands_group.sprites()[0].rotate(angle)
 
             draw_circle(window, radius - 50)
 
