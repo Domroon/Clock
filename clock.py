@@ -136,10 +136,9 @@ class TickMark(pygame.sprite.Sprite):
         self.length = length
         self.surface = surface
         self.pos = pos
-        self.image = pygame.Surface((width, length))
+        self.image = pygame.Surface((width, length), pygame.SRCALPHA)
         self.rect = self.image.get_rect(center=self.pos)
         self.image.fill(color)
-        #self.image.set_colorkey((0, 0, 0)) #background from an empty Surface is black by default (make it transparent)
     
     def update(self):
         # use this method to update the colorchanges in the future
@@ -147,7 +146,6 @@ class TickMark(pygame.sprite.Sprite):
 
     def rotate(self, angle):
         self.image = pygame.transform.rotozoom(self.image, angle, 1)
-        self.image.set_colorkey((0, 0, 0))
         self.rect = self.image.get_rect(center = self.pos)
         self.image = self.image.convert_alpha() # work faster with this image
 
@@ -229,7 +227,7 @@ def add_pointer(type, center_vector, radius, time, window, length=50, width=1, c
 
 def generate_hands(hands_group, surface):
     hand = Hand((surface.get_rect().center), 50, 210, (0, 255, 0), surface)
-    hand.rotate(150)
+    hand.rotate(360)
     hands_group.add(hand)
 
 
@@ -250,6 +248,7 @@ def main():
         # hands
         hands_group = pygame.sprite.Group()
         generate_hands(hands_group, window)
+        angle = 0
 
         # numbers                                                                
         numbers_group = pygame.sprite.Group()
@@ -273,6 +272,8 @@ def main():
                     return
 
             hands_group.draw(window)
+            #angle += 0.1
+            #hands_group.sprites()[0].rotate(angle)
 
             draw_circle(window, radius - 50)
 
