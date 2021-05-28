@@ -129,7 +129,7 @@ class Timer():
                 self.reset()
 
 # implement update method? its not necessary because i update nothing, its static!
-class TickMark(pygame.sprite.Sprite):
+class PointSightingLine(pygame.sprite.Sprite):
     def __init__(self, pos, width, length, color, surface, radius=0, offset=0):
         super().__init__()
         self.width = width
@@ -155,7 +155,7 @@ class TickMark(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center = self.pos + move_vector)
 
 # use update to update the positionings of the hands and do not what i do in the main-function
-class Hand(TickMark):
+class Hand(PointSightingLine):
     def __init__(self, pos, width, length, color, surface, radius=0, offset=0):
         super().__init__(pos, width, length, color, surface)
         self.move_vector = Vector2(0, -self.length/2 + self.width*2)
@@ -198,7 +198,7 @@ def generate_tick_marks(radius, tick_mark_group, surface):
             tick_length = 40  
             tick_width = 5
             offset = tick_length/2 - 10
-        tick = TickMark(surface.get_rect().center, tick_width, tick_length, (0, 0, 255), surface, radius=radius, offset=offset)
+        tick = PointSightingLine(surface.get_rect().center, tick_width, tick_length, (0, 0, 255), surface, radius=radius, offset=offset)
         tick.rotate(second*angle_per_minute)
         tick_mark_group.add(tick)
 
