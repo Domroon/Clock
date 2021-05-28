@@ -1,5 +1,6 @@
+from datetime import datetime as DateTime
 import pygame
-from pygame import Surface, Vector2, surface
+from pygame import Vector2
 import pygame.freetype
 import time
 import math
@@ -146,23 +147,25 @@ class TickMark(pygame.sprite.Sprite):
         # use this method to update the colorchanges in the future
         pass
 
-    def rotate(self, angle):
+    def rotate(self, angle, radius, second, angle_per_minute, offset):
+        radius_vector = Vector2(0, -radius + self.length + 50 - offset)
+        radius_vector = radius_vector.rotate(int(second* angle_per_minute)) # tick must be rotate itself too
+
         self.image = pygame.transform.rotozoom(self.image_copy, angle, 1)
-        self.rect = self.image.get_rect(center = self.pos)
-        self.image = self.image.convert_alpha() # work faster with this image
+        self.rect = self.image.get_rect(center = self.pos + radius_vector)
 
 
 class Hand(TickMark):
-        def __init__(self, pos, width, length, color, surface):
-            super().__init__(pos, width, length, color, surface)#
-            self.rect = self.image.get_rect(center = self.surface.get_rect().center + Vector2(0, -self.length/2))
+    def __init__(self, pos, width, length, color, surface):
+        super().__init__(pos, width, length, color, surface)#
+        self.rect = self.image.get_rect(center = self.surface.get_rect().center + Vector2(0, -self.length/2))
 
-        def rotate(self, angle):
-            hand_vector = Vector2(0, -self.length/2 + self.width/2)
-            hand_vector = hand_vector.rotate(angle)
+    def rotate(self, angle):
+        hand_vector = Vector2(0, -self.length/2 + self.width/2)
+        hand_vector = hand_vector.rotate(angle)
 
-            self.image = pygame.transform.rotozoom(self.image_copy, -angle, 1)
-            self.rect = self.image.get_rect(center = self.pos + hand_vector)
+        self.image = pygame.transform.rotozoom(self.image_copy, -angle, 1)
+        self.rect = self.image.get_rect(center = self.pos + hand_vector)
 
 
 def add_numbers(radius, size, window):
@@ -183,19 +186,20 @@ def draw_circle(surface, radius):
 def generate_tick_marks(radius, tick_mark_group, surface):
     angle_per_minute = 360/60
     
-    for minute in range(0, 60):
+    for second in range(0, 60):
         tick_length = 20
         tick_width = 2
-        radius_vector = Vector2(0, -radius + tick_length + 50)
-        radius_vector = radius_vector.rotate(int(minute* angle_per_minute)) # tick must be rotate itself too
-        if minute % 15 == 0:
+        offset = 0
+        if second % 15 == 0:
             tick_length = 40
             tick_width = 10
-        if minute % 5 == 0 and not minute % 15 == 0:
+            offset = tick_length/2 - 10
+        if second % 5 == 0 and not second % 15 == 0:
             tick_length = 40  
             tick_width = 5
-        tick = TickMark(surface.get_rect().center + radius_vector, tick_width, tick_length, (0, 0, 255), surface)
-        tick.rotate(-minute * angle_per_minute)
+            offset = tick_length/2 - 10
+        tick = TickMark(surface.get_rect().center, tick_width, tick_length, (0, 0, 255), surface)
+        tick.rotate(-second * angle_per_minute, radius, second, angle_per_minute, offset)
         tick_mark_group.add(tick)
 
 
@@ -227,9 +231,10 @@ def add_pointer(type, center_vector, radius, time, window, length=50, width=1, c
 
 
 def generate_hands(hands_group, surface):
-    hand = Hand((surface.get_rect().center), 50, 210, (0, 255, 0), surface)
-    hand.rotate(20)
-    hands_group.add(hand)
+    second_hand = Hand((surface.get_rect().center), 2, 210, (0, 255, 0), surface)
+    minute_hand = Hand((surface.get_rect().center), 10, 210, (0, 255, 0), surface)
+    hour_hand = Hand((surface.get_rect().center), 10, 120, (0, 255, 0), surface)
+    hands_group.add(second_hand, minute_hand, hour_hand)
 
 
 def main():
@@ -266,6 +271,9 @@ def main():
         load_pattern(numbers_group, pattern)
         timer = Timer(pattern['pattern_duration'])
 
+        angle_per_second = 360/60
+        angle_per_hour = 360/12
+
         clock = pygame.time.Clock()
         fps = 120
         while True:
@@ -275,11 +283,11 @@ def main():
                 if event.type == pygame.QUIT:
                     return
 
+            now = DateTime.now()
+            hands_group.sprites()[0].rotate(angle_per_second * now.second)
+            hands_group.sprites()[1].rotate(angle_per_second * now.minute)
+            hands_group.sprites()[2].rotate(angle_per_hour * now.hour + 30 * (now.minute/60))
             hands_group.draw(window)
-            angle += 1
-            if angle == 360:
-                angle = 0
-            hands_group.sprites()[0].rotate(angle)
 
             draw_circle(window, radius - 50)
 
