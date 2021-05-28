@@ -139,13 +139,13 @@ class Number(PointSightingLine):
 
 
 def draw_circle(radius, screen_width, surface):
-    pygame.draw.circle(surface, (0, 0, 255), surface.get_rect().center, radius, int(screen_width/100))
+    pygame.draw.circle(surface, (0, 100, 200), surface.get_rect().center, radius, int(screen_width/100))
 
 
 def generate_numbers(radius, numbers_group, size, surface):
     angel_per_number = 360/12
     for i in range(1, 13):
-        number = Number(str(i), size, surface.get_rect().center, (255, 255, 255), radius=radius, offset=50)
+        number = Number(str(i), size, surface.get_rect().center, (0, 100, 120), radius=radius, offset=50)
         number.rotate(i * angel_per_number)
         numbers_group.add(number)
 
@@ -165,16 +165,16 @@ def generate_tick_marks(radius, screen_width, tick_mark_group, surface):
             tick_length = screen_width/18  
             tick_width = screen_width/160
             offset = -screen_width/28
-        tick = PointSightingLine(surface.get_rect().center, tick_width, tick_length, (0, 0, 255), radius=radius, offset=offset)
+        tick = PointSightingLine(surface.get_rect().center, tick_width, tick_length, (0, 100, 200), radius=radius, offset=offset)
         tick.rotate(second*angle_per_minute)
         tick_mark_group.add(tick)
 
 
 def generate_hands(radius, hands_group, screen_width, surface):
     offset = -screen_width/4
-    second_hand = Hand("second", (surface.get_rect().center), screen_width/400, screen_width/3, (0, 255, 255), radius=radius, offset=offset)
-    minute_hand = Hand("minute", (surface.get_rect().center), screen_width/80, screen_width/3, (0, 255, 0), radius=radius, offset=offset)
-    hour_hand = Hand("hour", (surface.get_rect().center), screen_width/80, screen_width/5, (0, 255, 0), radius=radius, offset=offset-screen_width/15)
+    second_hand = Hand("second", (surface.get_rect().center), screen_width/400, screen_width/3, (0, 200, 200), radius=radius, offset=offset)
+    minute_hand = Hand("minute", (surface.get_rect().center), screen_width/80, screen_width/3, (0, 150, 150), radius=radius, offset=offset)
+    hour_hand = Hand("hour", (surface.get_rect().center), screen_width/80, screen_width/5, (0, 100, 150), radius=radius, offset=offset-screen_width/15)
     hands_group.add(minute_hand, hour_hand, second_hand)
 
 
@@ -191,7 +191,6 @@ def main():
         # circle
         radius = min(window.get_rect().center) - screen_width/8
         assert radius > 0
-
         draw_circle(radius, screen_width, background)
 
         # hands
