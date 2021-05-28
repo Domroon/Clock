@@ -88,30 +88,6 @@ PATTERNS = {
         }
 
 
-class Number(pygame.sprite.Sprite):
-    def __init__(self, digit, size, color, pos):
-        super().__init__()
-        self.digit = digit
-        self.settings = {}
-        self.font = pygame.freetype.Font(None, size)
-        self.pos = pos
-        self.color = color
-        self.image, self.rect = self.font.render(digit, self.color)
-        self.rect.center = pos
-    
-    def update(self, timer):
-        for time_point in self.settings:
-            if int(time_point) == timer:
-                self.color = self.settings[str(time_point)]['color']
-            elif int(time_point) + self.settings[time_point]['duration'] == timer:
-                self.color = (255, 255, 255) #white
-            else:
-                self.color = (255, 255, 255) #white
-            
-        self.image, self.rect = self.font.render(self.digit, self.color)
-        self.rect.center = self.pos
-
-
 class Timer():
     def __init__(self, max_sec):
         self.max_sec = max_sec
@@ -130,11 +106,8 @@ class Timer():
 
 
 class PointSightingLine(pygame.sprite.Sprite):
-    def __init__(self, pos, width, length, color, surface, radius=0, offset=0):
+    def __init__(self, pos, width, length, color, radius=0, offset=0, rotate_itself=True):
         super().__init__()
-        self.width = width
-        self.length = length
-        self.surface = surface
         self.pos = pos
         self.image = pygame.Surface((width, length), pygame.SRCALPHA)
         self.image = self.image.convert_alpha() # work faster with this image
@@ -143,17 +116,19 @@ class PointSightingLine(pygame.sprite.Sprite):
         self.move_vector = Vector2(0, -radius - offset)
         self.rect = self.image.get_rect(center=self.pos+self.move_vector)
         self.radius = radius
+        self.rotate_itself = rotate_itself
 
     def rotate(self, angle):
         move_vector = self.move_vector
         move_vector = move_vector.rotate(angle)
-        self.image = pygame.transform.rotozoom(self.image_copy, -angle, 1)
+        if self.rotate_itself:
+                self.image = pygame.transform.rotozoom(self.image_copy, -angle, 1)
         self.rect = self.image.get_rect(center = self.pos + move_vector)
 
 
 class Hand(PointSightingLine):
-    def __init__(self, hand_type, pos, width, length, color, surface, radius=0, offset=0):
-        super().__init__(pos, width, length, color, surface, radius, offset)
+    def __init__(self, hand_type, pos, width, length, color, radius=0, offset=0):
+        super().__init__(pos, width, length, color, radius, offset)
         self.hand_type = hand_type
         self.angle_per_second = 360/60
         self.angle_per_minute = self.angle_per_second
@@ -168,19 +143,28 @@ class Hand(PointSightingLine):
             self.rotate(self.angle_per_hour * now.hour + 30 * (now.minute/60))
 
 
+class Number(PointSightingLine):
+    def __init__(self, number, size, pos, color, radius, offset=0, width=0, length=0, rotate_itself=False):
+        super().__init__(pos, width, length, color, radius, offset, rotate_itself)
+        self.number = number
+        self.settings = {}
+        self.font = pygame.freetype.Font(None, size)
+        self.color = color
+        self.image, self.rect = self.font.render(self.number, self.color)
+        self.image_copy = self.image
+        self.rect = self.image.get_rect(center=pos + self.move_vector)
+
+
 def draw_circle(surface, radius):
     pygame.draw.circle(surface, (0, 0, 255), surface.get_rect().center, radius, 10)
 
 
 def generate_numbers(radius, numbers_group, size, window):
-    radius_vector = pygame.Vector2(0, -radius)
-    numbers_list = []
-
-    for hour in range(1, 13):
-        pos = window.get_rect().center + radius_vector.rotate(int(360 / 12 * hour))
-        numbers_list.append(Number(str(hour), size, (255, 255, 255), pos))
-
-    numbers_group.add(numbers_list)
+    angel_per_number = 360/12
+    for i in range(1, 13):
+        number = Number(str(i), size, window.get_rect().center, (255, 255, 255), radius=radius, offset=50)
+        number.rotate(i * angel_per_number)
+        numbers_group.add(number)
 
 
 def generate_tick_marks(radius, tick_mark_group, surface):
@@ -189,36 +173,26 @@ def generate_tick_marks(radius, tick_mark_group, surface):
     for second in range(0, 60):
         tick_length = 20
         tick_width = 2
-        offset = -70
+        offset = -20
         if second % 15 == 0:
             tick_length = 40
             tick_width = 10
-            offset = -70
+            offset = -30
         if second % 5 == 0 and not second % 15 == 0:
             tick_length = 40  
             tick_width = 5
-            offset = -80
-        tick = PointSightingLine(surface.get_rect().center, tick_width, tick_length, (0, 0, 255), surface, radius=radius, offset=offset)
+            offset = -25
+        tick = PointSightingLine(surface.get_rect().center, tick_width, tick_length, (0, 0, 255), radius=radius, offset=offset)
         tick.rotate(second*angle_per_minute)
         tick_mark_group.add(tick)
 
 
 def generate_hands(radius, hands_group, surface):
-    offset = -230
-    second_hand = Hand("second", (surface.get_rect().center), 2, 230, (0, 255, 255),surface, radius=radius, offset=offset)
-    minute_hand = Hand("minute", (surface.get_rect().center), 10, 230, (0, 255, 0), surface, radius=radius, offset=offset)
-    hour_hand = Hand("hour", (surface.get_rect().center), 10, 140, (0, 255, 0), surface, radius=radius, offset=offset-45)
+    offset = -180
+    second_hand = Hand("second", (surface.get_rect().center), 2, 230, (0, 255, 255), radius=radius, offset=offset)
+    minute_hand = Hand("minute", (surface.get_rect().center), 10, 230, (0, 255, 0), radius=radius, offset=offset)
+    hour_hand = Hand("hour", (surface.get_rect().center), 10, 140, (0, 255, 0), radius=radius, offset=offset-45)
     hands_group.add(minute_hand, hour_hand, second_hand)
-
-
-def load_pattern(numbers_group, pattern_dict):
-    keys_list = []
-    for key in pattern_dict:
-        keys_list.append(key)
-
-    for i in range(0, 12):
-        if int(keys_list[i]) == int(numbers_group.sprites()[i].digit):
-                numbers_group.sprites()[i].settings = pattern_dict[str(i+1)]
 
 
 def main():
@@ -233,9 +207,9 @@ def main():
         background = pygame.Surface(window.get_size())
         
         # circle
-        radius = min(window.get_rect().center) - 50
+        radius = min(window.get_rect().center) - 100
         assert radius > 0
-        draw_circle(background, radius - 50)
+        draw_circle(background, radius)
 
         # hands
         hands_group = pygame.sprite.Group()
@@ -252,7 +226,7 @@ def main():
 
         # pattern
         pattern = PATTERNS['test_pattern3']
-        load_pattern(numbers_group, pattern)
+        #load_pattern(numbers_group, pattern)
         timer = Timer(pattern['pattern_duration'])
 
         clock = pygame.time.Clock()
@@ -270,14 +244,15 @@ def main():
             hands_group.update(now)
             hands_group.draw(window)
             
-            timer.count()
-            numbers_group.update(timer.timer)
+            #timer.count()
+            #numbers_group.update(timer.timer)
             numbers_group.draw(window)
 
             pygame.display.update()
             clock.tick(fps)
     finally:
         pygame.quit()
+
 
 if __name__ == '__main__':
     main()
