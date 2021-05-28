@@ -161,7 +161,7 @@ class Hand(TickMark):
         self.rect = self.image.get_rect(center = self.surface.get_rect().center + Vector2(0, -self.length/2))
 
     def rotate(self, angle):
-        hand_vector = Vector2(0, -self.length/2 + self.width/2)
+        hand_vector = Vector2(0, -self.length/2 + self.width*2)
         hand_vector = hand_vector.rotate(angle)
 
         self.image = pygame.transform.rotozoom(self.image_copy, -angle, 1)
@@ -213,27 +213,10 @@ def load_pattern(numbers_group, pattern_dict):
                 numbers_group.sprites()[i].settings = pattern_dict[str(i+1)]
 
 
-
-# please remove this and implement a hands class
-def add_pointer(type, center_vector, radius, time, window, length=50, width=1, color=(255, 255, 255)):
-    if type == "hour":
-        angle_offset = 360/12
-    elif type == "min":
-        angle_offset = 360/60
-    elif type == "sec":
-        angle_offset = 360/60
-
-    second_line_begin_vector = pygame.math.Vector2(0, 0)
-    second_line_end_vector = pygame.math.Vector2(0, -radius + length)
-    second_line_begin_vector = second_line_begin_vector.rotate(time*angle_offset)
-    second_line_end_vector = second_line_end_vector.rotate(time*angle_offset)
-    pygame.draw.line(window, color, center_vector + second_line_begin_vector, center_vector + second_line_end_vector, width=width)
-
-
 def generate_hands(hands_group, surface):
-    second_hand = Hand((surface.get_rect().center), 2, 210, (0, 255, 0), surface)
-    minute_hand = Hand((surface.get_rect().center), 10, 210, (0, 255, 0), surface)
-    hour_hand = Hand((surface.get_rect().center), 10, 120, (0, 255, 0), surface)
+    second_hand = Hand((surface.get_rect().center), 2, 230, (0, 255, 0), surface)
+    minute_hand = Hand((surface.get_rect().center), 10, 230, (0, 255, 0), surface)
+    hour_hand = Hand((surface.get_rect().center), 10, 150, (0, 255, 0), surface)
     hands_group.add(second_hand, minute_hand, hour_hand)
 
 
@@ -255,7 +238,6 @@ def main():
         # hands
         hands_group = pygame.sprite.Group()
         generate_hands(hands_group, window)
-        angle = 0
 
         # numbers                                                                
         numbers_group = pygame.sprite.Group()
@@ -267,7 +249,7 @@ def main():
         generate_tick_marks(radius, tick_mark_group, background)
 
         # pattern
-        pattern = PATTERNS['test_pattern']
+        pattern = PATTERNS['test_pattern3']
         load_pattern(numbers_group, pattern)
         timer = Timer(pattern['pattern_duration'])
 
