@@ -172,6 +172,9 @@ class Animation:
         self.segments = segments
         self.total_necessary_frames = self._calculate_total_necessary_frames()
         self.frames_list = self._save_segment_frames()
+        self.current_segment = 1
+        self.past_frames = 0
+        self.frame = 0
 
     def _calculate_total_necessary_frames(self):
         total_necessary_frames = 0
@@ -192,25 +195,44 @@ class Animation:
         pass
 
     def update(self, current_frame):
-        pass
+        self.frame += current_frame/current_frame
+        
+        self.past_frames = self.segments[0].necessary_frames + self.segments[1].necessary_frames
+        if self.frame == self.past_frames + 1:
+            self.current_segment += 1
+        self.segments[self.current_segment].update()
 
 
 class Segment:
-    def __init__(self, numbers, time_in_ms, fps=120):
+    def __init__(self, numbers, time_in_ms, pattern, fps=120):
         self.numbers = numbers
         self.basic_status_color = (50, 50, 50)
         self.necessary_frames = int(fps * (time_in_ms/1000))
+        self.pattern = pattern
+        self.test = 0
 
-    def set_color(self, color, number):
+    def set_color_pattern(self, color, number):
         for number in self.numbers:
             if number.number == number:
                 number.color = color
 
-    def fade_out(self, number, time_in_ms):
+    def fade_out_pattern(self, number, time_in_ms):
         pass
 
-    def test(self):
-        pass
+    def test_pattern_1(self):
+        self.test += 1
+        print(f"test_pattern_1: {str(self.test)}")
+
+    def test_pattern_2(self):
+        self.test += 1
+        print(f"test_pattern_2: {str(self.test)}")
+
+    def update(self):
+        if self.pattern == "test_pattern_1":
+            self.test_pattern_1()
+        elif self.pattern == "test_pattern_2":
+            self.test_pattern_2()
+
 
 def draw_circle(radius, screen_width, surface):
     pygame.draw.circle(surface, (0, 100, 200), surface.get_rect().center, radius, int(screen_width/100))
@@ -281,15 +303,17 @@ def main():
         generate_tick_marks(radius, screen_width, tick_mark_group, background)
 
         #testing segments and animations
-        segment_1 = Segment([1, 2, 3], 500)
-        segment_2 = Segment([4, 5, 6], 1500)
+        segment_1 = Segment([1, 2, 3], 500, "test_pattern_1")
+        segment_2 = Segment([4, 5, 6], 1500, "test_pattern_2")
+        segment_3 = Segment([4, 5, 6], 250, "test_pattern_3")
 
-        segment_list = [segment_1, segment_2]
+        segment_list = [segment_1, segment_2, segment_3]
 
         animation = Animation(segment_list)
         print(segment_1.necessary_frames)
         print(segment_2.necessary_frames)
-        print(animation.total_necessary_frames)
+        print(segment_3.necessary_frames)
+        print(f"total: {animation.total_necessary_frames}")
         print(animation.frames_list)
 
         clock = pygame.time.Clock()
@@ -312,6 +336,8 @@ def main():
             
             numbers_group.update(frame)
             numbers_group.draw(window)
+
+            animation.update(frame)
 
             pygame.display.update()
             clock.tick(fps)
