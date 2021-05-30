@@ -147,7 +147,7 @@ class Number(PointSightingLine):
         #self.blink_all(frame)
     
     def increase_decrease_brightness(self, frame, increase=True):
-        if not self.r == 254:
+        if self.r <= 255 and self.r > 50:
             if increase:
                 self.r += 2
                 self.g += 2
@@ -165,6 +165,44 @@ class Number(PointSightingLine):
         if frame == duration:
             self.font.bgcolor = (0, 0, 0)
             self.font.render_to(self.image, (0, 0), self.number, (0, 0, 0))
+
+
+class Animation:
+    def __init__(self, segments, frame):
+        self.segments = segments
+        self.total_necessary_frames = self._calculate_total_necessary_frames
+        self.frames_list = self._save_segment_frames()
+
+    def _calculate_total_necessary_frames(self):
+        total_necessary_frames = 0
+        for segment in self.segments:
+            total_necessary_frames += segment.necessary_frames
+
+    # save the frames from all segments in a list
+    def _save_segment_frames(self):
+        frames_list = []
+        for segment in self.segments:
+            frames_list.append(self.segment.necessary_frames)
+
+    def start_next_segment(self):
+        pass
+
+class Segment:
+    def __init__(self, numbers, time_in_ms, fps=120):
+        self.numbers = numbers
+        self.basic_status_color = (50, 50, 50)
+        self.necessary_frames = fps * int(time_in_ms/1000)
+
+    def set_color(self, color, number):
+        for number in self.numbers:
+            if number.number == number:
+                number.color = color
+
+    def fade_out(self, number, time_in_ms):
+        pass
+
+    def test(self):
+        pass
 
 def draw_circle(radius, screen_width, surface):
     pygame.draw.circle(surface, (0, 100, 200), surface.get_rect().center, radius, int(screen_width/100))
