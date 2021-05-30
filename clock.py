@@ -168,9 +168,9 @@ class Number(PointSightingLine):
 
 
 class Animation:
-    def __init__(self, segments, frame):
+    def __init__(self, segments):
         self.segments = segments
-        self.total_necessary_frames = self._calculate_total_necessary_frames
+        self.total_necessary_frames = self._calculate_total_necessary_frames()
         self.frames_list = self._save_segment_frames()
 
     def _calculate_total_necessary_frames(self):
@@ -178,20 +178,28 @@ class Animation:
         for segment in self.segments:
             total_necessary_frames += segment.necessary_frames
 
+        return total_necessary_frames
+
     # save the frames from all segments in a list
     def _save_segment_frames(self):
         frames_list = []
         for segment in self.segments:
-            frames_list.append(self.segment.necessary_frames)
+            frames_list.append(segment.necessary_frames)
+
+        return frames_list
 
     def start_next_segment(self):
         pass
+
+    def update(self, current_frame):
+        pass
+
 
 class Segment:
     def __init__(self, numbers, time_in_ms, fps=120):
         self.numbers = numbers
         self.basic_status_color = (50, 50, 50)
-        self.necessary_frames = fps * int(time_in_ms/1000)
+        self.necessary_frames = int(fps * (time_in_ms/1000))
 
     def set_color(self, color, number):
         for number in self.numbers:
@@ -272,13 +280,24 @@ def main():
         tick_mark_group = pygame.sprite.Group()
         generate_tick_marks(radius, screen_width, tick_mark_group, background)
 
+        #testing segments and animations
+        segment_1 = Segment([1, 2, 3], 500)
+        segment_2 = Segment([4, 5, 6], 1500)
+
+        segment_list = [segment_1, segment_2]
+
+        animation = Animation(segment_list)
+        print(segment_1.necessary_frames)
+        print(segment_2.necessary_frames)
+        print(animation.total_necessary_frames)
+        print(animation.frames_list)
+
         clock = pygame.time.Clock()
         fps = 120
         frame = 0
         while True:
             window.fill((0, 0, 0))
             frame += 1
-            print(frame)
             window.blit(background, (0, 0))
 
             for event in pygame.event.get():
