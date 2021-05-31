@@ -173,8 +173,8 @@ class Animation:
         self.total_necessary_frames = self._calculate_total_necessary_frames()
         self.frames_list = self._save_segment_frames()
         self.current_segment = 1
-        self.past_frames = 0
-        self.frame = 0
+        self.past_frames = self.frames_list[0]
+        self.segments_frames = 0
 
     def _calculate_total_necessary_frames(self):
         total_necessary_frames = 0
@@ -195,12 +195,17 @@ class Animation:
         pass
 
     def update(self, current_frame):
-        self.frame += current_frame/current_frame
-        
-        self.past_frames = self.segments[0].necessary_frames + self.segments[1].necessary_frames
-        if self.frame == self.past_frames + 1:
-            self.current_segment += 1
-        self.segments[self.current_segment].update()
+        self.segments_frames += int(current_frame/current_frame)
+        print(self.past_frames)
+        if self.segments_frames == self.total_necessary_frames:
+            print(f"Reached Total necessary frame: {self.segments_frames}")
+            self.segments_frames = 0
+            self.current_segment = 1
+            self.past_frames = self.frames_list[0]
+
+        if self.segments_frames == self.past_frames:
+            self.past_frames += self.frames_list[self.current_segment]
+            self.current_segment +=1
 
 
 class Segment:
@@ -227,10 +232,16 @@ class Segment:
         self.test += 1
         print(f"test_pattern_2: {str(self.test)}")
 
+    def test_pattern_2(self):
+        self.test += 1
+        print(f"test_pattern_3: {str(self.test)}")
+
     def update(self):
         if self.pattern == "test_pattern_1":
             self.test_pattern_1()
         elif self.pattern == "test_pattern_2":
+            self.test_pattern_2()
+        elif self.pattern == "test_pattern_3":
             self.test_pattern_2()
 
 
@@ -304,7 +315,7 @@ def main():
 
         #testing segments and animations
         segment_1 = Segment([1, 2, 3], 500, "test_pattern_1")
-        segment_2 = Segment([4, 5, 6], 1500, "test_pattern_2")
+        segment_2 = Segment([4, 5, 6], 250, "test_pattern_2")
         segment_3 = Segment([4, 5, 6], 250, "test_pattern_3")
 
         segment_list = [segment_1, segment_2, segment_3]
