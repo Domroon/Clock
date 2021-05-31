@@ -196,9 +196,10 @@ class Animation:
 
     def update(self, current_frame):
         self.segments_frames += int(current_frame/current_frame)
-        print(self.past_frames)
+        #print(self.past_frames)
+        self.segments[self.current_segment-1].update()
         if self.segments_frames == self.total_necessary_frames:
-            print(f"Reached Total necessary frame: {self.segments_frames}")
+            #print(f"Reached Total necessary frame: {self.segments_frames}")
             self.segments_frames = 0
             self.current_segment = 1
             self.past_frames = self.frames_list[0]
@@ -215,6 +216,7 @@ class Segment:
         self.necessary_frames = int(fps * (time_in_ms/1000))
         self.pattern = pattern
         self.test = 0
+        self.frame = 1
 
     def set_color_pattern(self, color, number):
         for number in self.numbers:
@@ -226,23 +228,28 @@ class Segment:
 
     def test_pattern_1(self):
         self.test += 1
-        print(f"test_pattern_1: {str(self.test)}")
+        print(f"test_pattern_1: {self.frame}")
 
     def test_pattern_2(self):
         self.test += 1
-        print(f"test_pattern_2: {str(self.test)}")
+        print(f"test_pattern_2: {self.frame}")
 
-    def test_pattern_2(self):
+    def test_pattern_3(self):
         self.test += 1
-        print(f"test_pattern_3: {str(self.test)}")
+        print(f"test_pattern_3: {self.frame}")
 
     def update(self):
+        #print(self.frame)
         if self.pattern == "test_pattern_1":
             self.test_pattern_1()
         elif self.pattern == "test_pattern_2":
             self.test_pattern_2()
         elif self.pattern == "test_pattern_3":
-            self.test_pattern_2()
+            self.test_pattern_3() 
+
+        self.frame += 1
+        if self.frame == self.necessary_frames + 1:
+            self.frame = 1
 
 
 def draw_circle(radius, screen_width, surface):
