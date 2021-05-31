@@ -151,6 +151,12 @@ class Segment:
     def fade_out_pattern(self, number, time_in_ms):
         pass
 
+    def permanent_color(self):
+        for number in self.element_numbers:
+            self.animation_elements[number].change_color(self.color)
+            #if self.frame == self.necessary_frames:
+                #self.animation_elements[number].change_color(self.basic_status_color)
+
     def update(self):
         #print(self.frame)
         if self.pattern == "test_pattern_1":
@@ -163,6 +169,8 @@ class Segment:
             self.set_color()
         elif self.pattern == "do_nothing":
             self.do_nothing() 
+        elif self.pattern == "permanent_color":
+            self.permanent_color()
 
         self.frame += 1
         if self.frame == self.necessary_frames + 1:
@@ -209,6 +217,7 @@ def generate_hands(radius, hands_group, screen_width, surface):
     hour_hand = Hand("hour", (surface.get_rect().center), screen_width/80, screen_width/5, (0, 100, 150), radius=radius, offset=offset-screen_width/15)
     hands_group.add(minute_hand, hour_hand, second_hand)
 
+
 def load_animations(numbers_group):
 
     animation_elements = numbers_group.sprites()
@@ -224,13 +233,66 @@ def load_animations(numbers_group):
     segment_9 = Segment(animation_elements, (0, 0, 255), [8, 10], 200, "set_color")
     segment_10 = Segment(animation_elements, (0, 255, 0), [9, 11], 200, "set_color")
 
+    number_1_on = Segment(animation_elements, (255, 0, 0), [0], 100, "set_color")
+    number_2_on = Segment(animation_elements, (255, 0, 0), [1], 100, "set_color")
+    number_3_on = Segment(animation_elements, (255, 0, 0), [2], 100, "set_color")
+    number_4_on = Segment(animation_elements, (255, 0, 0), [3], 100, "set_color")
+    number_5_on = Segment(animation_elements, (255, 0, 0), [4], 100, "set_color")
+    number_6_on = Segment(animation_elements, (255, 0, 0), [5], 100, "set_color")
+    number_7_on = Segment(animation_elements, (255, 0, 0), [6], 100, "set_color")
+    number_8_on = Segment(animation_elements, (255, 0, 0), [7], 100, "set_color")
+    number_9_on = Segment(animation_elements, (255, 0, 0), [8], 100, "set_color")
+    number_10_on = Segment(animation_elements, (255, 0, 0), [9], 100, "set_color")
+    number_11_on = Segment(animation_elements, (255, 0, 0), [10], 100, "set_color")
+    number_12_on = Segment(animation_elements, (255, 0, 0), [11], 100, "set_color")
+
     all_green = Segment(animation_elements, (0, 255, 0), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 200, "set_color")
+    all_red = Segment(animation_elements, (255, 0, 0), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 200, "set_color")
     pause = Segment(animation_elements, (0, 0, 0), [0], 200, "do_nothing")
+
+    permanent_color = Segment(animation_elements, (255, 0, 255), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 200, "permanent_color")
+
+    permanent_12 = Segment(animation_elements, (255, 0, 0), [11], 200, "permanent_color")
+    permanent_11 = Segment(animation_elements, (255, 0, 0), [10], 200, "permanent_color")
+    permanent_10 = Segment(animation_elements, (255, 0, 0), [9], 200, "permanent_color")
+    permanent_9 = Segment(animation_elements, (255, 0, 0), [8], 200, "permanent_color")
+    permanent_8 = Segment(animation_elements, (255, 0, 0), [7], 200, "permanent_color")
+    permanent_7 = Segment(animation_elements, (255, 0, 0), [6], 200, "permanent_color")
+    permanent_6 = Segment(animation_elements, (255, 0, 0), [5], 200, "permanent_color")
+    permanent_5 = Segment(animation_elements, (255, 0, 0), [4], 200, "permanent_color")
+    permanent_4 = Segment(animation_elements, (255, 0, 0), [3], 200, "permanent_color")
+    permanent_3 = Segment(animation_elements, (255, 0, 0), [2], 200, "permanent_color")
+    permanent_2 = Segment(animation_elements, (255, 0, 0), [1], 200, "permanent_color")
+    permanent_1 = Segment(animation_elements, (255, 0, 0), [0], 200, "permanent_color")
+
+    color_reset_all = Segment(animation_elements, (50, 50, 50), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 200, "permanent_color")
+
+    permanent_basic_color = Segment(animation_elements, (50, 50, 50), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 200, "permanent_color")
         
-    animation_1 = [segment_1, segment_2, segment_3, segment_4, segment_5, segment_6, segment_7, segment_8, segment_9, segment_10]
+    animation_1 = [permanent_color, segment_1, segment_2, segment_3, segment_4, segment_5, segment_6, segment_7, segment_8, segment_9, segment_10]
     animation_2 = [all_green, pause, all_green, pause]
 
-    animations = [animation_1, animation_2]
+    # round add_animation
+    round_1 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on, number_7_on, number_8_on, number_9_on, number_10_on, number_11_on]
+    round_2 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on, number_7_on, number_8_on, number_9_on, number_10_on]
+    round_3 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on, number_7_on, number_8_on, number_9_on]
+    round_4 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on, number_7_on, number_8_on]
+    round_5 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on, number_7_on]
+    round_6 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on]
+    round_7 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on]
+    round_8 = [number_1_on, number_2_on, number_3_on, number_4_on]
+    round_9 = [number_1_on, number_2_on, number_3_on]
+    round_10 = [number_1_on, number_2_on]
+    round_11 = [number_1_on]
+
+    # hard_color_change
+    all_on_blue = Segment(animation_elements, (0, 0, 255), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 1000, "permanent_color")
+    all_on_green = Segment(animation_elements, (0, 255, 0), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 1000, "permanent_color")
+    all_on_red = Segment(animation_elements, (255, 0, 0), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 1000, "permanent_color")
+
+    hard_color_change = [all_on_blue, all_on_red, all_on_green]
+
+    animations = [hard_color_change, round_1, [permanent_12], round_2, [permanent_11], round_3, [permanent_10], round_4, [permanent_9], round_5, [permanent_8], round_6, [permanent_7], round_7, [permanent_6], round_8, [permanent_5], round_9, [permanent_4], round_10, [permanent_3], round_11, [permanent_2], [permanent_1], [pause], [color_reset_all], [all_red], [color_reset_all], [pause], animation_1, animation_2]
 
     segment_list = []
 
