@@ -129,10 +129,10 @@ class Animations:
 
 
 class Segment:
-    def __init__(self, animation_elements, pattern, color=(50, 50, 50), element_numbers=[], time_in_ms=1000, fps=120):
+    def __init__(self, animation_elements, pattern, color=(50, 50, 50), elements=[], time_in_ms=1000, fps=120):
         self.animation_elements = animation_elements
         self.color = color
-        self.element_numbers = element_numbers
+        self.elements = elements
         self.basic_status_color = (50, 50, 50)
         self.necessary_frames = int(fps * (time_in_ms/1000))
         self.pattern = pattern
@@ -140,10 +140,10 @@ class Segment:
         self.frame = 1
 
     def set_color(self):
-        for number in self.element_numbers:
-            self.animation_elements[number].change_color(self.color)
+        for element in self.elements:
+            self.animation_elements[element].change_color(self.color)
             if self.frame == self.necessary_frames:
-                self.animation_elements[number].change_color(self.basic_status_color)
+                self.animation_elements[element].change_color(self.basic_status_color)
 
     def do_nothing(self):
         pass
@@ -216,16 +216,20 @@ def load_animations(numbers_group):
 
     animation_elements = numbers_group.sprites()
 
+    # class that returns Segments and fill a dictionary, with the rigth keyword, you can put the right segment in the animation (need a lot of keyword arguments)
+    # eg. SegmentGenerator
     # segments
-    
+    test_segment = Segment(animation_elements, "set_color", color=(255, 0, 0), elements=[1], time_in_ms=500)
+    do_nothing_segment = Segment(animation_elements, "do_nothing", time_in_ms=100)
     # animations
-   
+    animation = [test_segment, do_nothing_segment]
     # animation groups
-   
+    animation_group = [animation]
     # add animations from animation_groups to animations_list
+    animation_groups = [animation_group]
 
     animations_list = []
-    for animation_group in animations_groups:
+    for animation_group in animation_groups:
         for animation in animation_group:
             animations_list.append(animation)
 
