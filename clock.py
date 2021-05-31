@@ -217,6 +217,7 @@ def load_animations(numbers_group):
     animation_elements = numbers_group.sprites()
 
     # define lot of segments
+    '''
     segment_1 = Segment(animation_elements, (255, 0, 0), [0, 2], 200, "set_color")
     segment_2 = Segment(animation_elements, (0, 0, 255), [1, 3], 200, "set_color")
     segment_3 = Segment(animation_elements, (0, 255, 0), [2, 4], 200, "set_color")
@@ -265,8 +266,9 @@ def load_animations(numbers_group):
     all_on_blue = Segment(animation_elements, (0, 0, 255), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 1000, "permanent_color")
     all_on_green = Segment(animation_elements, (0, 255, 0), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 1000, "permanent_color")
     all_on_red = Segment(animation_elements, (255, 0, 0), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 1000, "permanent_color")
-        
+    '''
     # animations
+    '''
     animation_1 = [permanent_color, segment_1, segment_2, segment_3, segment_4, segment_5, segment_6, segment_7, segment_8, segment_9, segment_10]
     animation_2 = [all_green, pause, all_green, pause]
     hard_color_change = [all_on_blue, all_on_red, all_on_green]
@@ -284,15 +286,18 @@ def load_animations(numbers_group):
     round_11 = [number_1_on, permanent_2]
     round_12 = [permanent_1]
     end = [pause, permanent_basic_color, all_red, permanent_basic_color, pause]
-
+    '''
     # animation groups
+    '''
     animation_1_group = [animation_1]
     animation_2_group = [animation_2]
     hard_color_change_group = [hard_color_change]
     round_add_animations_group = [round_1, round_2, round_3, round_4, round_5, round_6, round_7, round_8, round_9, round_10, round_11, round_12, end]
-
+    '''
     # add animations from animation_groups to animations_list
+    '''
     animations_groups = [round_add_animations_group, hard_color_change_group, animation_1_group, animation_2_group]
+    '''
 
     animations_list = []
     for animation_group in animations_groups:
