@@ -5,90 +5,6 @@ from pygame.constants import AUDIO_ALLOW_FREQUENCY_CHANGE
 import pygame.freetype
 import time
 
-PATTERNS = {
-        'test_pattern' : {
-                        '1' : 
-                                { '1' : {'color' : (255, 0, 0), 'duration' : 1}},
-                        '2' : 
-                                { '1' : {'color' : (255, 0, 0), 'duration' : 1}},
-                        '3' : 
-                                { '1': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '4' : 
-                                { '1': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '5' : 
-                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '6' : 
-                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '7' : 
-                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '8' : 
-                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '9' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '10' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '11' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '12' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        'pattern_duration' : 4},
-
-        'test_pattern2' : {
-                        '1' : 
-                                { '1' : {'color' : (255, 0, 0), 'duration' : 1}},
-                        '2' : 
-                                { '2' : {'color' : (255, 0, 0), 'duration' : 1}},
-                        '3' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '4' : 
-                                { '4': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '5' : 
-                                { '5': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '6' : 
-                                { '6': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '7' : 
-                                { '7': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '8' : 
-                                { '8': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '9' : 
-                                { '9': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '10' : 
-                                { '10': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '11' : 
-                                { '11': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '12' : 
-                                { '12': {'color' : (255, 0, 0), 'duration' : 1}},
-                        'pattern_duration' : 13},
-
-        'test_pattern3' : {
-                        '1' : 
-                                { '1' : {'color' : (255, 0, 0), 'duration' : 1}},
-                        '2' : 
-                                { '2' : {'color' : (255, 0, 0), 'duration' : 1}},
-                        '3' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '4' : 
-                                { '4': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '5' : 
-                                { '5': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '6' : 
-                                { '6': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '7' : 
-                                { '1': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '8' : 
-                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '9' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '10' : 
-                                { '4': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '11' : 
-                                { '5': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '12' : 
-                                { '6': {'color' : (255, 0, 0), 'duration' : 1}},
-                        'pattern_duration' : 7}
-        }
-
-
 class PointSightingLine(pygame.sprite.Sprite):
     def __init__(self, pos, width, length, color, radius=0, offset=0, rotate_itself=True):
         super().__init__()
@@ -144,9 +60,6 @@ class Number(PointSightingLine):
 
     def update(self, frame):
         pass
-        #self.increase_decrease_brightness(frame)
-        #self.increase_decrease_brightness(frame, increase=False)
-        #self.blink_all(frame)
     
     def change_color(self, color):
         self.font.render_to(self.image, (0, 0), self.number, color)
@@ -226,11 +139,6 @@ class Segment:
         self.test = 0
         self.frame = 1
 
-    #def set_color_pattern(self, color, number):
-        #for number in self.numbers:
-            #if number.number == number:
-                #number.color = color
-
     def set_color(self):
         for number in self.element_numbers:
             self.animation_elements[number].change_color(self.color)
@@ -242,18 +150,6 @@ class Segment:
 
     def fade_out_pattern(self, number, time_in_ms):
         pass
-
-    def test_pattern_1(self):
-        self.test += 1
-        print(f"test_pattern_1: {self.frame}")
-
-    def test_pattern_2(self):
-        self.test += 1
-        print(f"test_pattern_2: {self.frame}")
-
-    def test_pattern_3(self):
-        self.test += 1
-        print(f"test_pattern_3: {self.frame}")
 
     def update(self):
         #print(self.frame)
