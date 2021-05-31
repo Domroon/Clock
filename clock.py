@@ -1,6 +1,7 @@
 from datetime import datetime as DateTime
 import pygame
 from pygame import Vector2
+from pygame.constants import AUDIO_ALLOW_FREQUENCY_CHANGE
 import pygame.freetype
 import time
 
@@ -172,7 +173,7 @@ class Number(PointSightingLine):
             self.font.render_to(self.image, (0, 0), self.number, (0, 0, 0))
 
 
-class Animation:
+class Animations:
     def __init__(self, segments):
         self.segments = segments
         self.total_necessary_frames = self._calculate_total_necessary_frames()
@@ -312,6 +313,37 @@ def generate_hands(radius, hands_group, screen_width, surface):
     hour_hand = Hand("hour", (surface.get_rect().center), screen_width/80, screen_width/5, (0, 100, 150), radius=radius, offset=offset-screen_width/15)
     hands_group.add(minute_hand, hour_hand, second_hand)
 
+def load_animations(numbers_group):
+
+    animation_elements = numbers_group.sprites()
+
+    segment_1 = Segment(animation_elements, (255, 0, 0), [0, 2], 200, "set_color")
+    segment_2 = Segment(animation_elements, (0, 0, 255), [1, 3], 200, "set_color")
+    segment_3 = Segment(animation_elements, (0, 255, 0), [2, 4], 200, "set_color")
+    segment_4 = Segment(animation_elements, (255, 0, 255), [3, 5], 200, "set_color")
+    segment_5 = Segment(animation_elements, (255, 255, 0), [4, 6], 200, "set_color")
+    segment_6 = Segment(animation_elements, (0, 255, 255), [5, 7], 200, "set_color")
+    segment_7 = Segment(animation_elements, (255, 255, 255), [6, 8], 200, "set_color")
+    segment_8 = Segment(animation_elements, (255, 0, 0), [7, 9], 200, "set_color")
+    segment_9 = Segment(animation_elements, (0, 0, 255), [8, 10], 200, "set_color")
+    segment_10 = Segment(animation_elements, (0, 255, 0), [9, 11], 200, "set_color")
+
+    all_green = Segment(animation_elements, (0, 255, 0), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 200, "set_color")
+    pause = Segment(animation_elements, (0, 0, 0), [0], 200, "do_nothing")
+        
+    animation_1 = [segment_1, segment_2, segment_3, segment_4, segment_5, segment_6, segment_7, segment_8, segment_9, segment_10]
+    animation_2 = [all_green, pause, all_green, pause]
+
+    animations = [animation_1, animation_2]
+
+    segment_list = []
+
+    for animation in animations:
+        for segment in animation:
+            segment_list.append(segment)
+
+    return segment_list
+
 
 def main():
     pygame.init()
@@ -340,33 +372,8 @@ def main():
         # tick marks
         tick_mark_group = pygame.sprite.Group()
         generate_tick_marks(radius, screen_width, tick_mark_group, background)
-
-        #testing segments and animations
-        animation_elements = numbers_group.sprites()
-
-        #segment_1 = Segment([1, 2, 3], 500, "test_pattern_1")
-        #segment_2 = Segment([4, 5, 6], 250, "test_pattern_2")
-        #segment_3 = Segment([4, 5, 6], 250, "test_pattern_3")
-        segment_1 = Segment(animation_elements, (255, 0, 0), [0, 2], 200, "set_color")
-        segment_2 = Segment(animation_elements, (0, 0, 255), [1, 3], 200, "set_color")
-        segment_3 = Segment(animation_elements, (0, 255, 0), [2, 4], 200, "set_color")
-        segment_4 = Segment(animation_elements, (255, 0, 255), [3, 5], 200, "set_color")
-        segment_5 = Segment(animation_elements, (255, 255, 0), [4, 6], 200, "set_color")
-        segment_6 = Segment(animation_elements, (0, 255, 255), [5, 7], 200, "set_color")
-        segment_7 = Segment(animation_elements, (255, 255, 255), [6, 8], 200, "set_color")
-        segment_8 = Segment(animation_elements, (255, 0, 0), [7, 9], 200, "set_color")
-        segment_9 = Segment(animation_elements, (0, 0, 255), [8, 10], 200, "set_color")
-        segment_10 = Segment(animation_elements, (0, 255, 0), [9, 11], 200, "set_color")
-        #segment_11 = Segment(animation_elements, (255, 0, 255), [10, 12], 200, "set_color")
-
-        segment_list = [segment_1, segment_2, segment_3, segment_4, segment_5, segment_6, segment_7, segment_8, segment_9, segment_10]
-
-        animation = Animation(segment_list)
-        print(segment_1.necessary_frames)
-        #print(segment_2.necessary_frames)
-        #print(segment_3.necessary_frames)
-        print(f"total: {animation.total_necessary_frames}")
-        print(animation.frames_list)
+        
+        animations = Animations(load_animations(numbers_group))
 
         clock = pygame.time.Clock()
         fps = 120
@@ -389,7 +396,7 @@ def main():
             numbers_group.update(frame)
             numbers_group.draw(window)
 
-            animation.update(frame)
+            animations.update(frame)
 
             pygame.display.update()
             clock.tick(fps)
