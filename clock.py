@@ -348,9 +348,18 @@ def main():
         #segment_2 = Segment([4, 5, 6], 250, "test_pattern_2")
         #segment_3 = Segment([4, 5, 6], 250, "test_pattern_3")
         segment_1 = Segment(animation_elements, (255, 0, 0), [0, 2], 200, "set_color")
-        segment_2 = Segment(animation_elements, (0, 0, 255), [4], 500, "do_nothing")
+        segment_2 = Segment(animation_elements, (0, 0, 255), [1, 3], 200, "set_color")
+        segment_3 = Segment(animation_elements, (0, 255, 0), [2, 4], 200, "set_color")
+        segment_4 = Segment(animation_elements, (255, 0, 255), [3, 5], 200, "set_color")
+        segment_5 = Segment(animation_elements, (255, 255, 0), [4, 6], 200, "set_color")
+        segment_6 = Segment(animation_elements, (0, 255, 255), [5, 7], 200, "set_color")
+        segment_7 = Segment(animation_elements, (255, 255, 255), [6, 8], 200, "set_color")
+        segment_8 = Segment(animation_elements, (255, 0, 0), [7, 9], 200, "set_color")
+        segment_9 = Segment(animation_elements, (0, 0, 255), [8, 10], 200, "set_color")
+        segment_10 = Segment(animation_elements, (0, 255, 0), [9, 11], 200, "set_color")
+        #segment_11 = Segment(animation_elements, (255, 0, 255), [10, 12], 200, "set_color")
 
-        segment_list = [segment_1, segment_2]
+        segment_list = [segment_1, segment_2, segment_3, segment_4, segment_5, segment_6, segment_7, segment_8, segment_9, segment_10]
 
         animation = Animation(segment_list)
         print(segment_1.necessary_frames)
