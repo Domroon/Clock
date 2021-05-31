@@ -142,10 +142,15 @@ class Number(PointSightingLine):
         self.b = 255
 
     def update(self, frame):
+        pass
         #self.increase_decrease_brightness(frame)
-        self.increase_decrease_brightness(frame, increase=False)
+        #self.increase_decrease_brightness(frame, increase=False)
         #self.blink_all(frame)
     
+    def change_color(self, color):
+        self.font.render_to(self.image, (0, 0), self.number, color)
+        self.font.bgcolor = (0, 0, 0)
+
     def increase_decrease_brightness(self, frame, increase=True):
         if self.r <= 255 and self.r > 50:
             if increase:
@@ -210,18 +215,29 @@ class Animation:
 
 
 class Segment:
-    def __init__(self, numbers, time_in_ms, pattern, fps=120):
-        self.numbers = numbers
+    def __init__(self, animation_elements, color, element_numbers, time_in_ms, pattern, fps=120):
+        self.animation_elements = animation_elements
+        self.color = color
+        self.element_numbers = element_numbers
         self.basic_status_color = (50, 50, 50)
         self.necessary_frames = int(fps * (time_in_ms/1000))
         self.pattern = pattern
         self.test = 0
         self.frame = 1
 
-    def set_color_pattern(self, color, number):
-        for number in self.numbers:
-            if number.number == number:
-                number.color = color
+    #def set_color_pattern(self, color, number):
+        #for number in self.numbers:
+            #if number.number == number:
+                #number.color = color
+
+    def set_color(self):
+        for number in self.element_numbers:
+            self.animation_elements[number].change_color(self.color)
+            if self.frame == self.necessary_frames:
+                self.animation_elements[number].change_color(self.basic_status_color)
+
+    def do_nothing(self):
+        pass
 
     def fade_out_pattern(self, number, time_in_ms):
         pass
@@ -245,7 +261,11 @@ class Segment:
         elif self.pattern == "test_pattern_2":
             self.test_pattern_2()
         elif self.pattern == "test_pattern_3":
-            self.test_pattern_3() 
+            self.test_pattern_3()
+        elif self.pattern == "set_color":
+            self.set_color()
+        elif self.pattern == "do_nothing":
+            self.do_nothing() 
 
         self.frame += 1
         if self.frame == self.necessary_frames + 1:
@@ -258,8 +278,9 @@ def draw_circle(radius, screen_width, surface):
 
 def generate_numbers(radius, numbers_group, size, surface):
     angel_per_number = 360/12
+    basic_status_color = (50, 50, 50)
     for i in range(1, 13):
-        number = Number(str(i), size, surface.get_rect().center, (255, 255, 255), radius=radius, offset=50)
+        number = Number(str(i), size, surface.get_rect().center, basic_status_color, radius=radius, offset=50)
         number.rotate(i * angel_per_number)
         numbers_group.add(number)
 
@@ -321,16 +342,20 @@ def main():
         generate_tick_marks(radius, screen_width, tick_mark_group, background)
 
         #testing segments and animations
-        segment_1 = Segment([1, 2, 3], 500, "test_pattern_1")
-        segment_2 = Segment([4, 5, 6], 250, "test_pattern_2")
-        segment_3 = Segment([4, 5, 6], 250, "test_pattern_3")
+        animation_elements = numbers_group.sprites()
 
-        segment_list = [segment_1, segment_2, segment_3]
+        #segment_1 = Segment([1, 2, 3], 500, "test_pattern_1")
+        #segment_2 = Segment([4, 5, 6], 250, "test_pattern_2")
+        #segment_3 = Segment([4, 5, 6], 250, "test_pattern_3")
+        segment_1 = Segment(animation_elements, (255, 0, 0), [0, 2], 200, "set_color")
+        segment_2 = Segment(animation_elements, (0, 0, 255), [4], 500, "do_nothing")
+
+        segment_list = [segment_1, segment_2]
 
         animation = Animation(segment_list)
         print(segment_1.necessary_frames)
-        print(segment_2.necessary_frames)
-        print(segment_3.necessary_frames)
+        #print(segment_2.necessary_frames)
+        #print(segment_3.necessary_frames)
         print(f"total: {animation.total_necessary_frames}")
         print(animation.frames_list)
 
