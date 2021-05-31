@@ -129,7 +129,7 @@ class Animations:
 
 
 class Segment:
-    def __init__(self, animation_elements, color, element_numbers, time_in_ms, pattern, fps=120):
+    def __init__(self, animation_elements, pattern, color=(50, 50, 50), element_numbers=[], time_in_ms=1000, fps=120):
         self.animation_elements = animation_elements
         self.color = color
         self.element_numbers = element_numbers
@@ -151,21 +151,15 @@ class Segment:
     def fade_out_pattern(self, number, time_in_ms):
         pass
 
+    def fade_in(self, from_color, to_color, time_in_ms):
+        pass
+
     def permanent_color(self):
         for number in self.element_numbers:
             self.animation_elements[number].change_color(self.color)
-            #if self.frame == self.necessary_frames:
-                #self.animation_elements[number].change_color(self.basic_status_color)
 
     def update(self):
-        #print(self.frame)
-        if self.pattern == "test_pattern_1":
-            self.test_pattern_1()
-        elif self.pattern == "test_pattern_2":
-            self.test_pattern_2()
-        elif self.pattern == "test_pattern_3":
-            self.test_pattern_3()
-        elif self.pattern == "set_color":
+        if self.pattern == "set_color":
             self.set_color()
         elif self.pattern == "do_nothing":
             self.do_nothing() 
