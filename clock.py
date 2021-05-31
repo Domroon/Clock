@@ -222,6 +222,7 @@ def load_animations(numbers_group):
 
     animation_elements = numbers_group.sprites()
 
+    # define lot of segments
     segment_1 = Segment(animation_elements, (255, 0, 0), [0, 2], 200, "set_color")
     segment_2 = Segment(animation_elements, (0, 0, 255), [1, 3], 200, "set_color")
     segment_3 = Segment(animation_elements, (0, 255, 0), [2, 4], 200, "set_color")
@@ -265,38 +266,48 @@ def load_animations(numbers_group):
     permanent_2 = Segment(animation_elements, (255, 0, 0), [1], 200, "permanent_color")
     permanent_1 = Segment(animation_elements, (255, 0, 0), [0], 200, "permanent_color")
 
-    color_reset_all = Segment(animation_elements, (50, 50, 50), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 200, "permanent_color")
-
     permanent_basic_color = Segment(animation_elements, (50, 50, 50), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 200, "permanent_color")
-        
-    animation_1 = [permanent_color, segment_1, segment_2, segment_3, segment_4, segment_5, segment_6, segment_7, segment_8, segment_9, segment_10]
-    animation_2 = [all_green, pause, all_green, pause]
 
-    # round add_animation
-    round_1 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on, number_7_on, number_8_on, number_9_on, number_10_on, number_11_on]
-    round_2 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on, number_7_on, number_8_on, number_9_on, number_10_on]
-    round_3 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on, number_7_on, number_8_on, number_9_on]
-    round_4 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on, number_7_on, number_8_on]
-    round_5 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on, number_7_on]
-    round_6 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on]
-    round_7 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on]
-    round_8 = [number_1_on, number_2_on, number_3_on, number_4_on]
-    round_9 = [number_1_on, number_2_on, number_3_on]
-    round_10 = [number_1_on, number_2_on]
-    round_11 = [number_1_on]
-
-    # hard_color_change
     all_on_blue = Segment(animation_elements, (0, 0, 255), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 1000, "permanent_color")
     all_on_green = Segment(animation_elements, (0, 255, 0), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 1000, "permanent_color")
     all_on_red = Segment(animation_elements, (255, 0, 0), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 1000, "permanent_color")
-
+        
+    # animations
+    animation_1 = [permanent_color, segment_1, segment_2, segment_3, segment_4, segment_5, segment_6, segment_7, segment_8, segment_9, segment_10]
+    animation_2 = [all_green, pause, all_green, pause]
     hard_color_change = [all_on_blue, all_on_red, all_on_green]
 
-    animations = [hard_color_change, round_1, [permanent_12], round_2, [permanent_11], round_3, [permanent_10], round_4, [permanent_9], round_5, [permanent_8], round_6, [permanent_7], round_7, [permanent_6], round_8, [permanent_5], round_9, [permanent_4], round_10, [permanent_3], round_11, [permanent_2], [permanent_1], [pause], [color_reset_all], [all_red], [color_reset_all], [pause], animation_1, animation_2]
+    round_1 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on, number_7_on, number_8_on, number_9_on, number_10_on, number_11_on, permanent_12]
+    round_2 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on, number_7_on, number_8_on, number_9_on, number_10_on, permanent_11]
+    round_3 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on, number_7_on, number_8_on, number_9_on, permanent_10]
+    round_4 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on, number_7_on, number_8_on, permanent_9]
+    round_5 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on, number_7_on, permanent_8]
+    round_6 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, number_6_on, permanent_7]
+    round_7 = [number_1_on, number_2_on, number_3_on, number_4_on, number_5_on, permanent_6]
+    round_8 = [number_1_on, number_2_on, number_3_on, number_4_on, permanent_5]
+    round_9 = [number_1_on, number_2_on, number_3_on, permanent_4]
+    round_10 = [number_1_on, number_2_on, permanent_3]
+    round_11 = [number_1_on, permanent_2]
+    round_12 = [permanent_1]
+    end = [pause, permanent_basic_color, all_red, permanent_basic_color, pause]
+
+    # animation groups
+    animation_1_group = [animation_1]
+    animation_2_group = [animation_2]
+    hard_color_change_group = [hard_color_change]
+    round_add_animations_group = [round_1, round_2, round_3, round_4, round_5, round_6, round_7, round_8, round_9, round_10, round_11, round_12, end]
+
+    # add animations from animation_groups to animations_list
+    animations_groups = [round_add_animations_group, hard_color_change_group, animation_1_group, animation_2_group]
+
+    animations_list = []
+    for animation_group in animations_groups:
+        for animation in animation_group:
+            animations_list.append(animation)
 
     segment_list = []
 
-    for animation in animations:
+    for animation in animations_list:
         for segment in animation:
             segment_list.append(segment)
 
