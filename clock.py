@@ -222,13 +222,13 @@ class AnimationGenerator:
 
         return segments
 
-    def fill_circle_gradually(self, color=(255, 255, 255), ms_per_num=50, clockwise=True):
+    def fill_circle_gradually(self, color=(255, 255, 255), ms_per_num=70, clockwise=True):
         segments = []
         for j in range(0, 12):
             if clockwise:
                 for i in range(0, 12-j-1):
                     segments.append(Segment(self.animation_elements, "set_color", color=color, elements=[i], time_in_ms=ms_per_num))
-                segments.append(Segment(self.animation_elements, "permanent_color", color=color, elements=[12-j-1]))
+                segments.append(Segment(self.animation_elements, "permanent_color", color=color, elements=[12-j-1], time_in_ms=300))
             else:
                 pass
 
