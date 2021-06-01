@@ -222,6 +222,9 @@ class AnimationGenerator:
 
         return segments
 
+    def fill_circle_gradually(self):
+        pass
+
 
 def draw_circle(radius, screen_width, surface):
     pygame.draw.circle(surface, (0, 100, 200), surface.get_rect().center, radius, int(screen_width/100))
@@ -274,13 +277,13 @@ def load_animations(numbers_group):
     # segments = []
 
     # animations
-    raising_circling_num = animation_generator.raising_circling_num(250, 2000, 10, color=(0, 255, 0))
+    raising_circling_num = animation_generator.raising_circling_num(250, 1000, 10, color=(0, 255, 0))
     circling_num_counter_clockwise = animation_generator.circling_num(2, color=(0, 255, 0), clockwise=False)
     circling_num_clockwise = animation_generator.circling_num(2, color=(0, 255, 0))
     hard_color_change = animation_generator.hard_color_change(elements=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
 
     # animation groups
-    animation_group = [hard_color_change, circling_num_counter_clockwise, raising_circling_num, circling_num_clockwise]
+    animation_group = [hard_color_change, circling_num_counter_clockwise, circling_num_clockwise, raising_circling_num]
 
     # add animations from animation_groups to animations_list
     animation_groups = [animation_group]
