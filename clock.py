@@ -69,19 +69,6 @@ class Number(PointSightingLine):
         self.font.render_to(self.image, (0, 0), self.number, color)
         self.font.bgcolor = (0, 0, 0)
 
-    def increase_decrease_brightness(self, frame, increase=True):
-        if self.r <= 255 and self.r > 50:
-            if increase:
-                self.r += 2
-                self.g += 2
-                self.b += 2
-            else:
-                self.r -= 2
-                self.g -= 2
-                self.b -= 2
-        self.font.render_to(self.image, (0, 0), self.number, (self.r, self.g, self.b))
-        self.font.bgcolor = (0, 0, 0)
-
     def blink_all(self, frame, duration=60):
         if frame == 1:
             self.font.render_to(self.image, (0, 0), self.number, (255, 0, 0))
@@ -374,7 +361,7 @@ def main():
         fps = 120
         frame = 0
         while True:
-            window.fill((0, 0, 0))
+            #window.fill((0, 0, 0))
             frame += 1
             window.blit(background, (0, 0))
 
