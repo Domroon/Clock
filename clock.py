@@ -2,7 +2,6 @@ from datetime import datetime as DateTime
 import pygame
 from pygame import Vector2
 import pygame.freetype
-import time
 
 
 COLORS = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
@@ -273,9 +272,6 @@ def load_animations(numbers_group):
 
     animation_generator = AnimationGenerator(animation_elements)
 
-    # segments
-    # segments = []
-
     # animations
     raising_circling_num = animation_generator.raising_circling_num(250, 1000, 10, color=(0, 255, 0))
     circling_num_counter_clockwise = animation_generator.circling_num(2, color=(0, 255, 0), clockwise=False)
@@ -285,7 +281,7 @@ def load_animations(numbers_group):
     fade_in_white = animation_generator.fade_in(elements=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
 
     # animation groups
-    animation_group = [fade_in_white, fill_circle_gradually,  hard_color_change, circling_num_counter_clockwise, circling_num_clockwise, raising_circling_num]
+    animation_group = [fade_in_white, fill_circle_gradually, hard_color_change, circling_num_counter_clockwise, circling_num_clockwise, raising_circling_num]
 
     # add animations from animation_groups to animations_list
     animation_groups = [animation_group]
