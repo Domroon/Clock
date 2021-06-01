@@ -159,7 +159,7 @@ class Segment:
         pass
 
     def permanent_color(self):
-        for number in self.element_numbers:
+        for number in self.elements:
             self.animation_elements[number].change_color(self.color)
 
     def update(self):
@@ -222,8 +222,17 @@ class AnimationGenerator:
 
         return segments
 
-    def fill_circle_gradually(self):
-        pass
+    def fill_circle_gradually(self, color=(255, 255, 255), ms_per_num=50, clockwise=True):
+        segments = []
+        for j in range(0, 12):
+            if clockwise:
+                for i in range(0, 12-j-1):
+                    segments.append(Segment(self.animation_elements, "set_color", color=color, elements=[i], time_in_ms=ms_per_num))
+                segments.append(Segment(self.animation_elements, "permanent_color", color=color, elements=[12-j-1]))
+            else:
+                pass
+
+        return segments
 
 
 def draw_circle(radius, screen_width, surface):
@@ -281,9 +290,10 @@ def load_animations(numbers_group):
     circling_num_counter_clockwise = animation_generator.circling_num(2, color=(0, 255, 0), clockwise=False)
     circling_num_clockwise = animation_generator.circling_num(2, color=(0, 255, 0))
     hard_color_change = animation_generator.hard_color_change(elements=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+    fill_circle_gradually = animation_generator.fill_circle_gradually()
 
     # animation groups
-    animation_group = [hard_color_change, circling_num_counter_clockwise, circling_num_clockwise, raising_circling_num]
+    animation_group = [fill_circle_gradually, hard_color_change, circling_num_counter_clockwise, circling_num_clockwise, raising_circling_num]
 
     # add animations from animation_groups to animations_list
     animation_groups = [animation_group]
