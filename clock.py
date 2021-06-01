@@ -93,10 +93,8 @@ class Animations:
 
     def update(self, current_frame):
         self.segments_frames += int(current_frame/current_frame)
-        #print(self.past_frames)
         self.segments[self.current_segment-1].update()
         if self.segments_frames == self.total_necessary_frames:
-            #print(f"Reached Total necessary frame: {self.segments_frames}")
             self.segments_frames = 0
             self.current_segment = 1
             self.past_frames = self.frames_list[0]
@@ -184,7 +182,6 @@ class AnimationGenerator:
         for j in range(0, number_of_steps):
             for i in range(0, 12):
                 segments.append(Segment(self.animation_elements, "set_color", color=color, elements=[i], time_in_ms=element_time))
-                print(segments[i])
 
             element_time += step_time/12
 
