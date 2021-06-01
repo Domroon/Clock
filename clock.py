@@ -2,90 +2,10 @@ from datetime import datetime as DateTime
 import pygame
 from pygame import Vector2
 import pygame.freetype
-import time
 
-PATTERNS = {
-        'test_pattern' : {
-                        '1' : 
-                                { '1' : {'color' : (255, 0, 0), 'duration' : 1}},
-                        '2' : 
-                                { '1' : {'color' : (255, 0, 0), 'duration' : 1}},
-                        '3' : 
-                                { '1': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '4' : 
-                                { '1': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '5' : 
-                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '6' : 
-                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '7' : 
-                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '8' : 
-                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '9' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '10' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '11' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '12' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        'pattern_duration' : 4},
 
-        'test_pattern2' : {
-                        '1' : 
-                                { '1' : {'color' : (255, 0, 0), 'duration' : 1}},
-                        '2' : 
-                                { '2' : {'color' : (255, 0, 0), 'duration' : 1}},
-                        '3' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '4' : 
-                                { '4': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '5' : 
-                                { '5': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '6' : 
-                                { '6': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '7' : 
-                                { '7': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '8' : 
-                                { '8': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '9' : 
-                                { '9': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '10' : 
-                                { '10': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '11' : 
-                                { '11': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '12' : 
-                                { '12': {'color' : (255, 0, 0), 'duration' : 1}},
-                        'pattern_duration' : 13},
-
-        'test_pattern3' : {
-                        '1' : 
-                                { '1' : {'color' : (255, 0, 0), 'duration' : 1}},
-                        '2' : 
-                                { '2' : {'color' : (255, 0, 0), 'duration' : 1}},
-                        '3' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '4' : 
-                                { '4': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '5' : 
-                                { '5': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '6' : 
-                                { '6': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '7' : 
-                                { '1': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '8' : 
-                                { '2': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '9' : 
-                                { '3': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '10' : 
-                                { '4': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '11' : 
-                                { '5': {'color' : (255, 0, 0), 'duration' : 1}},
-                        '12' : 
-                                { '6': {'color' : (255, 0, 0), 'duration' : 1}},
-                        'pattern_duration' : 7}
-        }
+COLORS = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
+          (255, 128, 0), (51, 255, 255), (255, 0, 119)]
 
 
 class PointSightingLine(pygame.sprite.Sprite):
@@ -140,69 +60,170 @@ class Number(PointSightingLine):
         self.r = 255
         self.g = 255
         self.b = 255
-
-    def update(self, frame):
-        #self.increase_decrease_brightness(frame)
-        self.increase_decrease_brightness(frame, increase=False)
-        #self.blink_all(frame)
     
-    def increase_decrease_brightness(self, frame, increase=True):
-        if self.r <= 255 and self.r > 50:
-            if increase:
-                self.r += 2
-                self.g += 2
-                self.b += 2
-            else:
-                self.r -= 2
-                self.g -= 2
-                self.b -= 2
-        self.font.render_to(self.image, (0, 0), self.number, (self.r, self.g, self.b))
+    def change_color(self, color):
+        self.font.render_to(self.image, (0, 0), self.number, color)
         self.font.bgcolor = (0, 0, 0)
 
-    def blink_all(self, frame, duration=60):
-        if frame == 1:
-            self.font.render_to(self.image, (0, 0), self.number, (255, 0, 0))
-        if frame == duration:
-            self.font.bgcolor = (0, 0, 0)
-            self.font.render_to(self.image, (0, 0), self.number, (0, 0, 0))
 
-
-class Animation:
-    def __init__(self, segments, frame):
+class Animations:
+    def __init__(self, segments):
         self.segments = segments
-        self.total_necessary_frames = self._calculate_total_necessary_frames
+        self.total_necessary_frames = self._calculate_total_necessary_frames()
         self.frames_list = self._save_segment_frames()
+        self.current_segment = 1
+        self.past_frames = self.frames_list[0]
+        self.segments_frames = 0
 
     def _calculate_total_necessary_frames(self):
         total_necessary_frames = 0
         for segment in self.segments:
             total_necessary_frames += segment.necessary_frames
 
+        return total_necessary_frames
+
     # save the frames from all segments in a list
     def _save_segment_frames(self):
         frames_list = []
         for segment in self.segments:
-            frames_list.append(self.segment.necessary_frames)
+            frames_list.append(segment.necessary_frames)
 
-    def start_next_segment(self):
-        pass
+        return frames_list
+
+    def update(self, current_frame):
+        self.segments_frames += int(current_frame/current_frame)
+        self.segments[self.current_segment-1].update()
+        if self.segments_frames == self.total_necessary_frames:
+            self.segments_frames = 0
+            self.current_segment = 1
+            self.past_frames = self.frames_list[0]
+
+        if self.segments_frames == self.past_frames:
+            self.past_frames += self.frames_list[self.current_segment]
+            self.current_segment +=1
+
 
 class Segment:
-    def __init__(self, numbers, time_in_ms, fps=120):
-        self.numbers = numbers
+    def __init__(self, animation_elements, pattern, color=(50, 50, 50), elements=[], time_in_ms=1000, fps=120):
+        self.animation_elements = animation_elements
+        self.color = color
+        self.elements = elements
         self.basic_status_color = (50, 50, 50)
-        self.necessary_frames = fps * int(time_in_ms/1000)
+        self.necessary_frames = int(fps * (time_in_ms/1000))
+        self.pattern = pattern
+        self.test = 0
+        self.frame = 1
+        self.r = 50
+        self.g = 50
+        self.b = 50
+        self.color_counter = 0
 
-    def set_color(self, color, number):
-        for number in self.numbers:
-            if number.number == number:
-                number.color = color
+    def set_color(self):
+        for element in self.elements:
+            self.animation_elements[element].change_color(self.color)
+            if self.frame == self.necessary_frames:
+                self.animation_elements[element].change_color(self.basic_status_color)
 
-    def fade_out(self, number, time_in_ms):
+    def do_nothing(self):
         pass
 
-    def test(self):
+    def fade_out_pattern(self, number, time_in_ms):
         pass
+
+    def fade_in(self, from_color=[50, 50, 50], to_color=[255, 255, 255], increment=1):
+        if not self.color_counter > 202:  
+            self.r += increment
+            self.g += increment
+            self.b += increment
+            for element in self.elements:
+                self.animation_elements[element].change_color(self.color)
+                self.color = (self.r, self.g, self.b)
+            self.color_counter += 1
+        else:
+            self.r = 50 
+            self.g = 50
+            self.b = 50
+            for element in self.elements:
+                self.animation_elements[element].change_color(self.color)
+                self.color = (self.r, self.g, self.b)
+            self.color_counter = 0
+
+    def permanent_color(self):
+        for number in self.elements:
+            self.animation_elements[number].change_color(self.color)
+
+    def update(self):
+        if self.pattern == "set_color":
+            self.set_color()
+        elif self.pattern == "do_nothing":
+            self.do_nothing() 
+        elif self.pattern == "permanent_color":
+            self.permanent_color()
+        elif self.pattern == "fade_in":
+            self.fade_in()
+
+        self.frame += 1
+        if self.frame == self.necessary_frames + 1:
+            self.frame = 1
+
+
+class AnimationGenerator:
+    def __init__(self, animation_elements):
+        self.animation_elements = animation_elements
+
+    def raising_circling_num(self, rounds_per_ms_1, rounds_per_ms_2, number_of_steps, color=(255, 255, 255)):
+        segments = []
+
+        element_time = rounds_per_ms_1/12
+        half_time = rounds_per_ms_2/2
+        step_time = half_time/(number_of_steps-1)
+
+        for j in range(0, number_of_steps):
+            for i in range(0, 12):
+                segments.append(Segment(self.animation_elements, "set_color", color=color, elements=[i], time_in_ms=element_time))
+
+            element_time += step_time/12
+
+        return segments
+
+    def circling_num(self, rounds, color=(255, 255, 255), clockwise=True, ms_per_num=100):
+        segments = []
+        for j in range(0, rounds):
+            if clockwise:
+                for i in range(0, 12):
+                    segments.append(Segment(self.animation_elements, "set_color", color=color, elements=[i], time_in_ms=ms_per_num))
+            else:
+                for i in range(11, -1, -1):
+                    segments.append(Segment(self.animation_elements, "set_color", color=color, elements=[i], time_in_ms=ms_per_num))
+
+        return segments
+
+    def hard_color_change(self, elements=[0], time_ins_ms=500):
+        segments = []
+        for i in range(0, len(COLORS)):
+            segments.append(Segment(self.animation_elements, "set_color", color=COLORS[i], elements=elements, time_in_ms=time_ins_ms))
+
+        return segments
+
+    def fill_circle_gradually(self, color=(255, 255, 255), ms_per_num=70, clockwise=True):
+        segments = []
+        for j in range(0, 12):
+            if clockwise:
+                for i in range(0, 12-j-1):
+                    segments.append(Segment(self.animation_elements, "set_color", color=color, elements=[i], time_in_ms=ms_per_num))
+                segments.append(Segment(self.animation_elements, "permanent_color", color=color, elements=[12-j-1], time_in_ms=300))
+            else:
+                pass
+
+        return segments
+
+    def fade_in(self, elements=[0]):
+        segments = []
+        segments.append(Segment(self.animation_elements, "fade_in", elements=elements, time_in_ms=3000))
+        segments.append(Segment(self.animation_elements, "set_color", color=(50, 50, 50), elements=elements, time_in_ms=20))
+
+        return segments
+
 
 def draw_circle(radius, screen_width, surface):
     pygame.draw.circle(surface, (0, 100, 200), surface.get_rect().center, radius, int(screen_width/100))
@@ -210,8 +231,9 @@ def draw_circle(radius, screen_width, surface):
 
 def generate_numbers(radius, numbers_group, size, surface):
     angel_per_number = 360/12
+    basic_status_color = (50, 50, 50)
     for i in range(1, 13):
-        number = Number(str(i), size, surface.get_rect().center, (255, 255, 255), radius=radius, offset=50)
+        number = Number(str(i), size, surface.get_rect().center, basic_status_color, radius=radius, offset=50)
         number.rotate(i * angel_per_number)
         numbers_group.add(number)
 
@@ -244,6 +266,40 @@ def generate_hands(radius, hands_group, screen_width, surface):
     hands_group.add(minute_hand, hour_hand, second_hand)
 
 
+def load_animations(numbers_group):
+
+    animation_elements = numbers_group.sprites()
+
+    animation_generator = AnimationGenerator(animation_elements)
+
+    # animations
+    raising_circling_num = animation_generator.raising_circling_num(250, 1000, 10, color=(0, 255, 0))
+    circling_num_counter_clockwise = animation_generator.circling_num(2, color=(0, 255, 0), clockwise=False)
+    circling_num_clockwise = animation_generator.circling_num(2, color=(0, 255, 0))
+    hard_color_change = animation_generator.hard_color_change(elements=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+    fill_circle_gradually = animation_generator.fill_circle_gradually()
+    fade_in_white = animation_generator.fade_in(elements=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+
+    # animation groups
+    animation_group = [fade_in_white, fill_circle_gradually, hard_color_change, circling_num_counter_clockwise, circling_num_clockwise, raising_circling_num]
+
+    # add animations from animation_groups to animations_list
+    animation_groups = [animation_group]
+
+    animations_list = []
+    for animation_group in animation_groups:
+        for animation in animation_group:
+            animations_list.append(animation)
+
+    segment_list = []
+
+    for animation in animations_list:
+        for segment in animation:
+            segment_list.append(segment)
+
+    return segment_list
+
+
 def main():
     pygame.init()
     try:
@@ -271,14 +327,15 @@ def main():
         # tick marks
         tick_mark_group = pygame.sprite.Group()
         generate_tick_marks(radius, screen_width, tick_mark_group, background)
+        
+        animations = Animations(load_animations(numbers_group))
 
         clock = pygame.time.Clock()
         fps = 120
         frame = 0
         while True:
-            window.fill((0, 0, 0))
+            #window.fill((0, 0, 0))
             frame += 1
-            print(frame)
             window.blit(background, (0, 0))
 
             for event in pygame.event.get():
@@ -293,6 +350,8 @@ def main():
             
             numbers_group.update(frame)
             numbers_group.draw(window)
+
+            animations.update(frame)
 
             pygame.display.update()
             clock.tick(fps)
