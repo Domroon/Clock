@@ -171,6 +171,43 @@ class Segment:
             self.frame = 1
 
 
+class SegmentGenerator:
+    def __init__(self):
+        pass
+
+    def set_color(self):
+        pass
+
+
+class AnimationGenerator:
+    def __init__(self, animation_elements):
+        self.animation_elements = animation_elements
+
+    def modify_circle_speed(self, rounds_per_ms_1, rounds_per_ms_2, number_of_steps, color=(255, 255, 255), decrease=True):
+        segments = []
+
+        if decrease:
+            element_time = rounds_per_ms_1/12
+            half_time = rounds_per_ms_2/2
+            step_time = half_time/(number_of_steps-1)
+        else:
+            element_time = rounds_per_ms_1/12
+            half_time = rounds_per_ms_1/2
+            step_time = half_time
+
+        for j in range(0, number_of_steps):
+            for i in range(0, 12):
+                segments.append(Segment(self.animation_elements, "set_color", color=color, elements=[i], time_in_ms=element_time))
+                print(segments[i])
+
+            if decrease:
+                element_time += step_time/12
+            else:
+                element_time -= step_time/12
+
+        return segments
+
+
 def draw_circle(radius, screen_width, surface):
     pygame.draw.circle(surface, (0, 100, 200), surface.get_rect().center, radius, int(screen_width/100))
 
@@ -216,15 +253,15 @@ def load_animations(numbers_group):
 
     animation_elements = numbers_group.sprites()
 
-    # class that returns Segments and fill a dictionary, with the rigth keyword, you can put the right segment in the animation (need a lot of keyword arguments)
-    # eg. SegmentGenerator
+    animation_generator = AnimationGenerator(animation_elements)
+
     # segments
-    test_segment = Segment(animation_elements, "set_color", color=(255, 0, 0), elements=[1], time_in_ms=500)
-    do_nothing_segment = Segment(animation_elements, "do_nothing", time_in_ms=100)
+    segments = []
     # animations
-    animation = [test_segment, do_nothing_segment]
+    decrease_circle_speed = animation_generator.modify_circle_speed(200, 3000, 10)
+    increase_circle_speed = animation_generator.modify_circle_speed(3000, 500, 4, decrease=False)
     # animation groups
-    animation_group = [animation]
+    animation_group = [decrease_circle_speed]
     # add animations from animation_groups to animations_list
     animation_groups = [animation_group]
 
