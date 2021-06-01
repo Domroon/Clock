@@ -169,7 +169,7 @@ class Segment:
                 self.color = (self.r, self.g, self.b)
             self.color_counter += 1
         else:
-            self.r = 50
+            self.r = 50 
             self.g = 50
             self.b = 50
             for element in self.elements:
