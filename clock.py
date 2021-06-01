@@ -91,9 +91,6 @@ class Animations:
 
         return frames_list
 
-    def start_next_segment(self):
-        pass
-
     def update(self, current_frame):
         self.segments_frames += int(current_frame/current_frame)
         #print(self.past_frames)
