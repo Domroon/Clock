@@ -61,9 +61,6 @@ class Number(PointSightingLine):
         self.r = 255
         self.g = 255
         self.b = 255
-
-    def update(self, frame):
-        pass
     
     def change_color(self, color):
         self.font.render_to(self.image, (0, 0), self.number, color)
