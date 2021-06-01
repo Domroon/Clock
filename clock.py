@@ -1,12 +1,9 @@
 from datetime import datetime as DateTime
 import pygame
 from pygame import Vector2
-from pygame.constants import AUDIO_ALLOW_FREQUENCY_CHANGE
 import pygame.freetype
 import time
 
-COLORS = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255)
-          (255, 128, 0), (51, 255, 255), (255, 0, 119)]
 
 class PointSightingLine(pygame.sprite.Sprite):
     def __init__(self, pos, width, length, color, radius=0, offset=0, rotate_itself=True):
@@ -202,6 +199,18 @@ class AnimationGenerator:
 
         return segments
 
+    def circling_num(self, rounds, color=(255, 255, 255), clockwise=True, ms_per_num=100):
+        segments = []
+        for j in range(0, rounds):
+            if clockwise:
+                for i in range(0, 12):
+                    segments.append(Segment(self.animation_elements, "set_color", color=color, elements=[i], time_in_ms=ms_per_num))
+            else:
+                for i in range(11, -1, -1):
+                    segments.append(Segment(self.animation_elements, "set_color", color=color, elements=[i], time_in_ms=ms_per_num))
+
+        return segments
+
 
 def draw_circle(radius, screen_width, surface):
     pygame.draw.circle(surface, (0, 100, 200), surface.get_rect().center, radius, int(screen_width/100))
@@ -254,8 +263,10 @@ def load_animations(numbers_group):
     segments = []
     # animations
     raising_circling_num = animation_generator.raising_circling_num(250, 2000, 10, color=(0, 255, 0))
+    circling_num_counter_clockwise = animation_generator.circling_num(2, color=(0, 255, 0), clockwise=False)
+    circling_num_clockwise = animation_generator.circling_num(2, color=(0, 255, 0))
     # animation groups
-    animation_group = [raising_circling_num]
+    animation_group = [circling_num_counter_clockwise, raising_circling_num, circling_num_clockwise]
     # add animations from animation_groups to animations_list
     animation_groups = [animation_group]
 
