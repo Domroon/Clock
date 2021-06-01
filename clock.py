@@ -142,6 +142,9 @@ class Segment:
         self.pattern = pattern
         self.test = 0
         self.frame = 1
+        self.r = 50
+        self.g = 50
+        self.b = 50
 
     def set_color(self):
         for element in self.elements:
@@ -155,8 +158,14 @@ class Segment:
     def fade_out_pattern(self, number, time_in_ms):
         pass
 
-    def fade_in(self, from_color, to_color, time_in_ms):
-        pass
+    def fade_in(self, from_color=[50, 50, 50], to_color=[255, 255, 255], increment=1):
+        if self.r < 250 and self.g < 254 and self.b < 250:  
+            self.r += increment
+            self.g += increment
+            self.b += increment
+            for element in self.elements:
+                self.animation_elements[element].change_color(self.color)
+                self.color = (self.r, self.g, self.b)
 
     def permanent_color(self):
         for number in self.elements:
@@ -169,6 +178,8 @@ class Segment:
             self.do_nothing() 
         elif self.pattern == "permanent_color":
             self.permanent_color()
+        elif self.pattern == "fade_in":
+            self.fade_in()
 
         self.frame += 1
         if self.frame == self.necessary_frames + 1:
@@ -234,6 +245,12 @@ class AnimationGenerator:
 
         return segments
 
+    def fade_in(self, elements=[0]):
+        segments = []
+        segments.append(Segment(self.animation_elements, "fade_in", elements=elements, time_in_ms=3000))
+        segments.append(Segment(self.animation_elements, "set_color", color=(50, 50, 50), elements=elements, time_in_ms=20))
+
+        return segments
 
 def draw_circle(radius, screen_width, surface):
     pygame.draw.circle(surface, (0, 100, 200), surface.get_rect().center, radius, int(screen_width/100))
@@ -291,9 +308,10 @@ def load_animations(numbers_group):
     circling_num_clockwise = animation_generator.circling_num(2, color=(0, 255, 0))
     hard_color_change = animation_generator.hard_color_change(elements=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
     fill_circle_gradually = animation_generator.fill_circle_gradually()
+    fade_in_white = animation_generator.fade_in(elements=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
 
     # animation groups
-    animation_group = [fill_circle_gradually, hard_color_change, circling_num_counter_clockwise, circling_num_clockwise, raising_circling_num]
+    animation_group = [fade_in_white, fill_circle_gradually,  hard_color_change, circling_num_counter_clockwise, circling_num_clockwise, raising_circling_num]
 
     # add animations from animation_groups to animations_list
     animation_groups = [animation_group]
