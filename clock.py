@@ -170,14 +170,6 @@ class Segment:
             self.frame = 1
 
 
-class SegmentGenerator:
-    def __init__(self):
-        pass
-
-    def set_color(self):
-        pass
-
-
 class AnimationGenerator:
     def __init__(self, animation_elements):
         self.animation_elements = animation_elements
@@ -235,6 +227,7 @@ class AnimationGenerator:
         segments.append(Segment(self.animation_elements, "set_color", color=(50, 50, 50), elements=elements, time_in_ms=20))
 
         return segments
+
 
 def draw_circle(radius, screen_width, surface):
     pygame.draw.circle(surface, (0, 100, 200), surface.get_rect().center, radius, int(screen_width/100))
