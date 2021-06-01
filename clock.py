@@ -145,6 +145,7 @@ class Segment:
         self.r = 50
         self.g = 50
         self.b = 50
+        self.color_counter = 0
 
     def set_color(self):
         for element in self.elements:
@@ -159,13 +160,22 @@ class Segment:
         pass
 
     def fade_in(self, from_color=[50, 50, 50], to_color=[255, 255, 255], increment=1):
-        if self.r < 250 and self.g < 254 and self.b < 250:  
+        if not self.color_counter > 202:  
             self.r += increment
             self.g += increment
             self.b += increment
             for element in self.elements:
                 self.animation_elements[element].change_color(self.color)
                 self.color = (self.r, self.g, self.b)
+            self.color_counter += 1
+        else:
+            self.r = 50
+            self.g = 50
+            self.b = 50
+            for element in self.elements:
+                self.animation_elements[element].change_color(self.color)
+                self.color = (self.r, self.g, self.b)
+            self.color_counter = 0
 
     def permanent_color(self):
         for number in self.elements:
