@@ -5,6 +5,9 @@ from pygame.constants import AUDIO_ALLOW_FREQUENCY_CHANGE
 import pygame.freetype
 import time
 
+COLORS = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255)
+          (255, 128, 0), (51, 255, 255), (255, 0, 119)]
+
 class PointSightingLine(pygame.sprite.Sprite):
     def __init__(self, pos, width, length, color, radius=0, offset=0, rotate_itself=True):
         super().__init__()
@@ -183,27 +186,19 @@ class AnimationGenerator:
     def __init__(self, animation_elements):
         self.animation_elements = animation_elements
 
-    def modify_circle_speed(self, rounds_per_ms_1, rounds_per_ms_2, number_of_steps, color=(255, 255, 255), decrease=True):
+    def raising_circling_num(self, rounds_per_ms_1, rounds_per_ms_2, number_of_steps, color=(255, 255, 255)):
         segments = []
 
-        if decrease:
-            element_time = rounds_per_ms_1/12
-            half_time = rounds_per_ms_2/2
-            step_time = half_time/(number_of_steps-1)
-        else:
-            element_time = rounds_per_ms_1/12
-            half_time = rounds_per_ms_1/2
-            step_time = half_time
+        element_time = rounds_per_ms_1/12
+        half_time = rounds_per_ms_2/2
+        step_time = half_time/(number_of_steps-1)
 
         for j in range(0, number_of_steps):
             for i in range(0, 12):
                 segments.append(Segment(self.animation_elements, "set_color", color=color, elements=[i], time_in_ms=element_time))
                 print(segments[i])
 
-            if decrease:
-                element_time += step_time/12
-            else:
-                element_time -= step_time/12
+            element_time += step_time/12
 
         return segments
 
@@ -258,10 +253,9 @@ def load_animations(numbers_group):
     # segments
     segments = []
     # animations
-    decrease_circle_speed = animation_generator.modify_circle_speed(200, 3000, 10)
-    increase_circle_speed = animation_generator.modify_circle_speed(3000, 500, 4, decrease=False)
+    raising_circling_num = animation_generator.raising_circling_num(250, 2000, 10, color=(0, 255, 0))
     # animation groups
-    animation_group = [decrease_circle_speed]
+    animation_group = [raising_circling_num]
     # add animations from animation_groups to animations_list
     animation_groups = [animation_group]
 
