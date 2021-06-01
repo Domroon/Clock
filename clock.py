@@ -5,6 +5,10 @@ import pygame.freetype
 import time
 
 
+COLORS = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
+          (255, 128, 0), (51, 255, 255), (255, 0, 119)]
+
+
 class PointSightingLine(pygame.sprite.Sprite):
     def __init__(self, pos, width, length, color, radius=0, offset=0, rotate_itself=True):
         super().__init__()
@@ -210,6 +214,9 @@ class AnimationGenerator:
                     segments.append(Segment(self.animation_elements, "set_color", color=color, elements=[i], time_in_ms=ms_per_num))
 
         return segments
+
+    def hard_color_change(self):
+        pass
 
 
 def draw_circle(radius, screen_width, surface):
