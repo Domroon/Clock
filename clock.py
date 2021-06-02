@@ -58,9 +58,6 @@ class Number(PointSightingLine):
         self.image, self.rect = self.font.render(self.number, self.color)
         self.image_copy = self.image
         self.rect = self.image.get_rect(center=pos + self.move_vector)
-        self.r = 255
-        self.g = 255
-        self.b = 255
     
     def change_color(self, color):
         self.font.render_to(self.image, (0, 0), self.number, color)
@@ -131,6 +128,7 @@ class Segment:
     def fade_out_pattern(self, number, time_in_ms):
         pass
 
+    # not working for now
     def fade_in(self):
         start_color=(50, 50, 50)
         end_color=(255, 255, 255)
@@ -173,24 +171,6 @@ class Segment:
             for element in self.elements:
                 self.animation_elements[element].change_color(self.color)
                 self.color = start_color
-        '''
-        if not self.color_counter > 202:  
-            self.r += increment
-            self.g += increment
-            self.b += increment
-            for element in self.elements:
-                self.animation_elements[element].change_color(self.color)
-                self.color = (self.r, self.g, self.b)
-            self.color_counter += 1
-        else:
-            self.r = 50 
-            self.g = 50
-            self.b = 50
-            for element in self.elements:
-                self.animation_elements[element].change_color(self.color)
-                self.color = (self.r, self.g, self.b)
-            self.color_counter = 0
-        '''
 
     def permanent_color(self):
         for number in self.elements:
@@ -261,6 +241,7 @@ class AnimationGenerator:
 
         return segments
 
+    # not working for now
     def fade_in(self, elements=[0]):
         segments = []
         segments.append(Segment(self.animation_elements, "fade_in", elements=elements, time_in_ms=1000))
@@ -371,7 +352,6 @@ def load_animations(numbers_group):
     fill_circle_erase = animation_generator.fill_circle_erase(color=(255, 0, 0))
 
     # animation groups
-    #animation_group = [blink, swap_between_two, fill_circle_gradually, hard_color_change, circling_num_counter_clockwise, circling_num_clockwise, raising_circling_num]
     raising_group = [raising_circling_num_red, raising_circling_num_green, raising_circling_num_blue]
     circling_group = [circling_num_counter_clockwise, circling_num_clockwise]
     color_change_group = [color_change_1, color_change_2]
