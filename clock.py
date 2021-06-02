@@ -2,6 +2,7 @@ from datetime import datetime as DateTime
 import pygame
 from pygame import Vector2
 import pygame.freetype
+import math
 
 
 COLORS = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
@@ -130,7 +131,49 @@ class Segment:
     def fade_out_pattern(self, number, time_in_ms):
         pass
 
-    def fade_in(self, from_color=[50, 50, 50], to_color=[255, 255, 255], increment=1):
+    def fade_in(self):
+        start_color=(50, 50, 50)
+        end_color=(255, 255, 255)
+
+        r_increasing_value =  end_color[0] - start_color[0]
+        g_increasing_value =  end_color[1] - start_color[1]
+        b_increasing_value =  end_color[2] - start_color[2]
+
+        r_increase_per_frame = round(r_increasing_value / self.necessary_frames)
+        g_increase_per_frame = round(g_increasing_value / self.necessary_frames)
+        b_increase_per_frame = round(b_increasing_value / self.necessary_frames)
+
+        r_calculated_end_color = r_increase_per_frame * self.necessary_frames + end_color[0]
+        g_calculated_end_color = g_increase_per_frame * self.necessary_frames + end_color[1]
+        b_calculated_end_color = b_increase_per_frame * self.necessary_frames + end_color[2]
+
+        too_much_r = r_calculated_end_color - end_color[0]
+        too_much_g = g_calculated_end_color - end_color[1]
+        too_much_b = b_calculated_end_color - end_color[2]
+
+        # if the calculated end_color is higher than the specified
+        if self.frame % (too_much_r/5):
+            r_increase_per_frame = 0
+        
+        if self.frame % (too_much_g/5):
+            g_increase_per_frame = 0
+
+        if self.frame % (too_much_b/5):
+            b_increase_per_frame = 0
+
+        self.r += r_increase_per_frame
+        self.g += g_increase_per_frame
+        self.b += b_increase_per_frame
+
+        for element in self.elements:
+            self.animation_elements[element].change_color(self.color)
+            self.color = (self.r, self.g, self.b)
+
+        if self.r == 254:
+            for element in self.elements:
+                self.animation_elements[element].change_color(self.color)
+                self.color = start_color
+        '''
         if not self.color_counter > 202:  
             self.r += increment
             self.g += increment
@@ -147,6 +190,7 @@ class Segment:
                 self.animation_elements[element].change_color(self.color)
                 self.color = (self.r, self.g, self.b)
             self.color_counter = 0
+        '''
 
     def permanent_color(self):
         for number in self.elements:
@@ -219,11 +263,10 @@ class AnimationGenerator:
 
     def fade_in(self, elements=[0]):
         segments = []
-        segments.append(Segment(self.animation_elements, "fade_in", elements=elements, time_in_ms=3000))
-        segments.append(Segment(self.animation_elements, "set_color", color=(50, 50, 50), elements=elements, time_in_ms=20))
+        segments.append(Segment(self.animation_elements, "fade_in", elements=elements, time_in_ms=1000))
+        #segments.append(Segment(self.animation_elements, "set_color", color=(50, 50, 50), elements=elements, time_in_ms=20))
 
         return segments
-
 
 def draw_circle(radius, screen_width, surface):
     pygame.draw.circle(surface, (0, 100, 200), surface.get_rect().center, radius, int(screen_width/100))
