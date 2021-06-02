@@ -293,6 +293,13 @@ class AnimationGenerator:
 
         return segments
 
+    def fill_circle_erase(self, color=(255, 255, 255), ms_per_num=10):
+        segments = []
+        segments.append(Segment(self.animation_elements, "permanent_color", color=color, elements=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]))
+        self.circling_num(1, ms_per_num=10)
+
+        return segments
+
 
 def draw_circle(radius, screen_width, surface):
     pygame.draw.circle(surface, (0, 100, 200), surface.get_rect().center, radius, int(screen_width/100))
@@ -361,6 +368,8 @@ def load_animations(numbers_group):
     blink_white = animation_generator.blink(5)
     blink_green = animation_generator.blink(5, color=(0, 255, 0))
 
+    fill_circle_erase = animation_generator.fill_circle_erase(color=(255, 0, 0))
+
     # animation groups
     #animation_group = [blink, swap_between_two, fill_circle_gradually, hard_color_change, circling_num_counter_clockwise, circling_num_clockwise, raising_circling_num]
     raising_group = [raising_circling_num_red, raising_circling_num_green, raising_circling_num_blue]
@@ -369,9 +378,10 @@ def load_animations(numbers_group):
     fill_group = [fill_circle_white, fill_circle_blue]
     swap_group = [swap_between_two_1, swap_between_two_2]
     blink_group = [blink_white, blink_green]
+    circle_erase_group = [fill_circle_erase]
 
     # add animations from animation_groups to animations_list
-    animation_groups = [fill_group, swap_group, blink_group, color_change_group, raising_group, circling_group]
+    animation_groups = [circle_erase_group, fill_group, swap_group, blink_group, color_change_group, raising_group, circling_group]
 
     animations_list = []
     for animation_group in animation_groups:
