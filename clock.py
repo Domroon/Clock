@@ -285,6 +285,14 @@ class AnimationGenerator:
 
         return segments
 
+    def blink(self, count, color=(255, 255, 255), glow_time=200, pause_time=200):
+        segments = []
+        for i in range(0, count):
+            segments.append(Segment(self.animation_elements, "set_color", color=color, elements=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], time_in_ms=glow_time))
+            segments.append(Segment(self.animation_elements, "do_nothing", time_in_ms=pause_time))
+
+        return segments
+
 
 def draw_circle(radius, screen_width, surface):
     pygame.draw.circle(surface, (0, 100, 200), surface.get_rect().center, radius, int(screen_width/100))
@@ -341,9 +349,10 @@ def load_animations(numbers_group):
     fill_circle_gradually = animation_generator.fill_circle_gradually()
     fade_in_white = animation_generator.fade_in(elements=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
     swap_between_two = animation_generator.swap_between_two()
+    blink = animation_generator.blink(5)
 
     # animation groups
-    animation_group = [swap_between_two, fill_circle_gradually, hard_color_change, circling_num_counter_clockwise, circling_num_clockwise, raising_circling_num]
+    animation_group = [blink, swap_between_two, fill_circle_gradually, hard_color_change, circling_num_counter_clockwise, circling_num_clockwise, raising_circling_num]
 
     # add animations from animation_groups to animations_list
     animation_groups = [animation_group]
