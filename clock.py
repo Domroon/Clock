@@ -268,6 +268,24 @@ class AnimationGenerator:
 
         return segments
 
+    def swap_between_two(self, color_1=(255, 0, 0), color_2=(0, 255, 0), rounds=10):
+        segments = []
+        elements = []
+        elements_2 = []
+        for i in range(0, 11, 2):
+            elements.append(i)
+
+        for i in range(1, 10, 2):
+            elements_2.append(i)
+            elements_2.append(11)   
+
+        for i in range(0, rounds):
+            segments.append(Segment(self.animation_elements, "set_color", color=color_1, elements=elements, time_in_ms=200))
+            segments.append(Segment(self.animation_elements, "set_color", color=color_2, elements=elements_2, time_in_ms=200))
+
+        return segments
+
+
 def draw_circle(radius, screen_width, surface):
     pygame.draw.circle(surface, (0, 100, 200), surface.get_rect().center, radius, int(screen_width/100))
 
@@ -322,9 +340,10 @@ def load_animations(numbers_group):
     hard_color_change = animation_generator.hard_color_change(elements=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
     fill_circle_gradually = animation_generator.fill_circle_gradually()
     fade_in_white = animation_generator.fade_in(elements=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+    swap_between_two = animation_generator.swap_between_two()
 
     # animation groups
-    animation_group = [fade_in_white, fill_circle_gradually, hard_color_change, circling_num_counter_clockwise, circling_num_clockwise, raising_circling_num]
+    animation_group = [swap_between_two, fill_circle_gradually, hard_color_change, circling_num_counter_clockwise, circling_num_clockwise, raising_circling_num]
 
     # add animations from animation_groups to animations_list
     animation_groups = [animation_group]
