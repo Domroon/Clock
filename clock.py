@@ -2,6 +2,7 @@ from datetime import datetime as DateTime
 import pygame
 from pygame import Vector2
 import pygame.freetype
+import math
 
 
 COLORS = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
@@ -57,9 +58,6 @@ class Number(PointSightingLine):
         self.image, self.rect = self.font.render(self.number, self.color)
         self.image_copy = self.image
         self.rect = self.image.get_rect(center=pos + self.move_vector)
-        self.r = 255
-        self.g = 255
-        self.b = 255
     
     def change_color(self, color):
         self.font.render_to(self.image, (0, 0), self.number, color)
@@ -130,23 +128,49 @@ class Segment:
     def fade_out_pattern(self, number, time_in_ms):
         pass
 
-    def fade_in(self, from_color=[50, 50, 50], to_color=[255, 255, 255], increment=1):
-        if not self.color_counter > 202:  
-            self.r += increment
-            self.g += increment
-            self.b += increment
+    # not working for now
+    def fade_in(self):
+        start_color=(50, 50, 50)
+        end_color=(255, 255, 255)
+
+        r_increasing_value =  end_color[0] - start_color[0]
+        g_increasing_value =  end_color[1] - start_color[1]
+        b_increasing_value =  end_color[2] - start_color[2]
+
+        r_increase_per_frame = round(r_increasing_value / self.necessary_frames)
+        g_increase_per_frame = round(g_increasing_value / self.necessary_frames)
+        b_increase_per_frame = round(b_increasing_value / self.necessary_frames)
+
+        r_calculated_end_color = r_increase_per_frame * self.necessary_frames + end_color[0]
+        g_calculated_end_color = g_increase_per_frame * self.necessary_frames + end_color[1]
+        b_calculated_end_color = b_increase_per_frame * self.necessary_frames + end_color[2]
+
+        too_much_r = r_calculated_end_color - end_color[0]
+        too_much_g = g_calculated_end_color - end_color[1]
+        too_much_b = b_calculated_end_color - end_color[2]
+
+        # if the calculated end_color is higher than the specified
+        if self.frame % (too_much_r/5):
+            r_increase_per_frame = 0
+        
+        if self.frame % (too_much_g/5):
+            g_increase_per_frame = 0
+
+        if self.frame % (too_much_b/5):
+            b_increase_per_frame = 0
+
+        self.r += r_increase_per_frame
+        self.g += g_increase_per_frame
+        self.b += b_increase_per_frame
+
+        for element in self.elements:
+            self.animation_elements[element].change_color(self.color)
+            self.color = (self.r, self.g, self.b)
+
+        if self.r == 254:
             for element in self.elements:
                 self.animation_elements[element].change_color(self.color)
-                self.color = (self.r, self.g, self.b)
-            self.color_counter += 1
-        else:
-            self.r = 50 
-            self.g = 50
-            self.b = 50
-            for element in self.elements:
-                self.animation_elements[element].change_color(self.color)
-                self.color = (self.r, self.g, self.b)
-            self.color_counter = 0
+                self.color = start_color
 
     def permanent_color(self):
         for number in self.elements:
@@ -217,10 +241,43 @@ class AnimationGenerator:
 
         return segments
 
+    # not working for now
     def fade_in(self, elements=[0]):
         segments = []
-        segments.append(Segment(self.animation_elements, "fade_in", elements=elements, time_in_ms=3000))
-        segments.append(Segment(self.animation_elements, "set_color", color=(50, 50, 50), elements=elements, time_in_ms=20))
+        segments.append(Segment(self.animation_elements, "fade_in", elements=elements, time_in_ms=1000))
+        #segments.append(Segment(self.animation_elements, "set_color", color=(50, 50, 50), elements=elements, time_in_ms=20))
+
+        return segments
+
+    def swap_between_two(self, color_1=(255, 0, 0), color_2=(0, 255, 0), rounds=10):
+        segments = []
+        elements = []
+        elements_2 = []
+        for i in range(0, 11, 2):
+            elements.append(i)
+
+        for i in range(1, 10, 2):
+            elements_2.append(i)
+            elements_2.append(11)   
+
+        for i in range(0, rounds):
+            segments.append(Segment(self.animation_elements, "set_color", color=color_1, elements=elements, time_in_ms=200))
+            segments.append(Segment(self.animation_elements, "set_color", color=color_2, elements=elements_2, time_in_ms=200))
+
+        return segments
+
+    def blink(self, count, color=(255, 255, 255), glow_time=200, pause_time=200):
+        segments = []
+        for i in range(0, count):
+            segments.append(Segment(self.animation_elements, "set_color", color=color, elements=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], time_in_ms=glow_time))
+            segments.append(Segment(self.animation_elements, "do_nothing", time_in_ms=pause_time))
+
+        return segments
+
+    def fill_circle_erase(self, color=(255, 255, 255), ms_per_num=10):
+        segments = []
+        segments.append(Segment(self.animation_elements, "permanent_color", color=color, elements=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]))
+        self.circling_num(1, ms_per_num=10)
 
         return segments
 
@@ -273,18 +330,38 @@ def load_animations(numbers_group):
     animation_generator = AnimationGenerator(animation_elements)
 
     # animations
-    raising_circling_num = animation_generator.raising_circling_num(250, 1000, 10, color=(0, 255, 0))
+    raising_circling_num_red = animation_generator.raising_circling_num(250, 1000, 10, color=(255, 0, 0))
+    raising_circling_num_green = animation_generator.raising_circling_num(250, 1000, 10, color=(0, 255, 0))
+    raising_circling_num_blue = animation_generator.raising_circling_num(250, 1000, 10, color=(0, 0, 255))
+
     circling_num_counter_clockwise = animation_generator.circling_num(2, color=(0, 255, 0), clockwise=False)
     circling_num_clockwise = animation_generator.circling_num(2, color=(0, 255, 0))
-    hard_color_change = animation_generator.hard_color_change(elements=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
-    fill_circle_gradually = animation_generator.fill_circle_gradually()
-    fade_in_white = animation_generator.fade_in(elements=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+
+    color_change_1 = animation_generator.hard_color_change(elements=[0, 2, 4, 6, 8, 10], time_ins_ms=250)
+    color_change_2 = animation_generator.hard_color_change(elements= [1, 3, 5, 7, 9, 11], time_ins_ms=150)
+
+    fill_circle_white = animation_generator.fill_circle_gradually()
+    fill_circle_blue = animation_generator.fill_circle_gradually(color=(0, 0, 255), ms_per_num=50)
+
+    swap_between_two_1 = animation_generator.swap_between_two()
+    swap_between_two_2 = animation_generator.swap_between_two(color_1=(255, 255, 255), color_2=(0, 0, 255))
+
+    blink_white = animation_generator.blink(5)
+    blink_green = animation_generator.blink(5, color=(0, 255, 0))
+
+    fill_circle_erase = animation_generator.fill_circle_erase(color=(255, 0, 0))
 
     # animation groups
-    animation_group = [fade_in_white, fill_circle_gradually, hard_color_change, circling_num_counter_clockwise, circling_num_clockwise, raising_circling_num]
+    raising_group = [raising_circling_num_red, raising_circling_num_green, raising_circling_num_blue]
+    circling_group = [circling_num_counter_clockwise, circling_num_clockwise]
+    color_change_group = [color_change_1, color_change_2]
+    fill_group = [fill_circle_white, fill_circle_blue]
+    swap_group = [swap_between_two_1, swap_between_two_2]
+    blink_group = [blink_white, blink_green]
+    circle_erase_group = [fill_circle_erase]
 
     # add animations from animation_groups to animations_list
-    animation_groups = [animation_group]
+    animation_groups = [circle_erase_group, fill_group, swap_group, blink_group, color_change_group, raising_group, circling_group]
 
     animations_list = []
     for animation_group in animation_groups:
