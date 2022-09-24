@@ -1,8 +1,17 @@
-# How to use
+![clock](https://user-images.githubusercontent.com/48067330/192119668-c8ff1a43-9c14-407d-bd2b-564a66d672cd.jpg)
 
-1. cd to the directory where requirements.txt is located.
-2. `python -m venv /path/to/new/virtual/environment`
-3. `/path/to/new/virtual/environment/Scripts/activate`
-4. `pip install -r requirements.txt`
-5. `clock.py`
+# Installation
+
+    cd Clock
+    python -m venv venv
+    ./venv/Scripts/activate
+    pip install -r requirements.txt
+    cd Clock
+    python clock.py
+    
+# Start
+    cd Clock
+    ./venv/Scripts/activate
+    python clock.py
+    
 
